@@ -1,0 +1,77 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Add About Station section for manual updates",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "summary": "Add a new 'About Station' section to the About page that displays station information with a clear indication that content can be manually updated by administrators",
+      "acceptanceCriteria": [
+        "A dedicated 'About Station' section is visible on the About page",
+        "The section includes placeholder text indicating it will be manually updated",
+        "The section is styled consistently with the existing Christmas-themed design"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/AboutPage.tsx",
+          "operation": "modify",
+          "description": "Add a new 'About Station' section using the existing Card component pattern. Include a title, placeholder description text indicating manual updates by administrators, and maintain Christmas-themed styling consistent with the existing page layout. Use the useGetStationInformation hook to fetch and display station information when available."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Add an admin page for managing the About Station content with a form to edit title, description, and detailed information",
+      "acceptanceCriteria": [
+        "New admin page accessible from Admin Dashboard for managing station info",
+        "Form includes fields for editing station title and description",
+        "Save button persists changes to the backend",
+        "Success/error notifications appear after save attempts"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/admin/ManageStationInfo.tsx",
+          "operation": "create",
+          "description": "Create a new admin page component for managing station information. Include a form with controlled inputs for title, description, and content fields. Use the useUpdateStationInfo mutation hook to save changes. Display the current station info using useGetStationInformation hook. Show success toast notifications on successful save and error toast on failure. Wrap the page content in ProtectedRoute component to ensure only admins can access it. Follow the styling patterns from other admin pages like ManagePrograms.tsx."
+        }
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "summary": "Add React Query hooks for fetching and updating station information",
+      "acceptanceCriteria": [
+        "useGetStationInfo hook fetches current station information",
+        "useUpdateStationInfo mutation hook updates station content",
+        "Hooks follow existing patterns in useQueries.ts"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Add useGetStationInformation query hook that calls actor.getStationInformation() with queryKey ['stationInformation']. Add useUpdateStationInfo mutation hook that calls actor.updateStationInformation() and invalidates the 'stationInformation' query on success. Follow the existing patterns in the file for query configuration and error handling."
+        }
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "summary": "Add navigation link to the Manage Station Info page from the Admin Dashboard",
+      "acceptanceCriteria": [
+        "Card or link appears on Admin Dashboard for 'Manage Station Info'",
+        "Link navigates to the new admin page",
+        "Icon and styling match existing admin dashboard items"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/admin/AdminDashboard.tsx",
+          "operation": "modify",
+          "description": "Add a new navigation Card component for 'Manage Station Info' in the admin dashboard grid. Use an appropriate Lucide icon (e.g., Info or FileText). Include a description like 'Update station information and about content'. Add a Link component that navigates to '/admin/manage-station-info'. Position it logically within the existing grid of admin management cards, maintaining consistent styling and layout."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Register a new route for the Manage Station Info admin page. Add a route configuration with path '/admin/manage-station-info' that lazy loads the ManageStationInfo component. Place it alongside the other admin route definitions to maintain organization."
+        }
+      ]
+    }
+  ]
+}

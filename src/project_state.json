@@ -1,0 +1,69 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 3,
+  "summary": "A station/radio application with on-air display controls, update button, and an about station section for manual updates",
+  "architectural_notes": [],
+  "known_issues": [],
+  "isFixRequest": false,
+  "existing_features": [
+    {
+      "id": "feature-add-a-new-about-station-section-to-the-about-page-that-displays-station-information-with-a-clear-indication-that-content-can-be-manually-updated-by-administrators",
+      "title": "Add a new 'About Station' section to the About page that displays station information with a clear indication that content can be manually updated by administrators",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-an-admin-page-for-managing-the-about-station-content-with-a-form-to-edit-title-description-and-detailed-information",
+      "title": "Add an admin page for managing the About Station content with a form to edit title, description, and detailed information",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-react-query-hooks-for-fetching-and-updating-station-information",
+      "title": "Add React Query hooks for fetching and updating station information",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-navigation-link-to-the-manage-station-info-page-from-the-admin-dashboard",
+      "title": "Add navigation link to the Manage Station Info page from the Admin Dashboard",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Add about station section with manual update capability",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Create a backend data type and storage for station information including fields for title, description, and rich text content",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Create backend mutation function to update station information with admin authorization",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "status": "pending"
+    }
+  ],
+  "projectName": "Christmas Channel Radio",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

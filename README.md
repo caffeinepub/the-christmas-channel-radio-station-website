@@ -1,2 +1,3 @@
-# the-christmas-channel-radio-station-website
-Exported from Caffeine project: The Christmas Channel Radio Station Website
+## 
+
+To run app build and run docker image: `docker build -t app . docker run -it --network host app`

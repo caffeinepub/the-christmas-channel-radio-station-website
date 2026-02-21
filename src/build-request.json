@@ -1,0 +1,117 @@
+{
+  "kind": "build_request",
+  "title": "Add About Station section for manual updates",
+  "projectName": "Christmas Channel Radio",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Add a new 'About Station' section to the About page that displays station information with a clear indication that content can be manually updated by administrators",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user"
+        ],
+        "quotes": [
+          "add about station section and i will update manual"
+        ]
+      },
+      "acceptanceCriteria": [
+        "A dedicated 'About Station' section is visible on the About page",
+        "The section includes placeholder text indicating it will be manually updated",
+        "The section is styled consistently with the existing Christmas-themed design"
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Create a backend data type and storage for station information including fields for title, description, and rich text content",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-user"
+        ]
+      },
+      "acceptanceCriteria": [
+        "StationInfo data type is defined in backend/main.mo with title and description fields",
+        "Stable storage variable holds the station information",
+        "Query function allows fetching current station information"
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Add an admin page for managing the About Station content with a form to edit title, description, and detailed information",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user"
+        ]
+      },
+      "acceptanceCriteria": [
+        "New admin page accessible from Admin Dashboard for managing station info",
+        "Form includes fields for editing station title and description",
+        "Save button persists changes to the backend",
+        "Success/error notifications appear after save attempts"
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Create backend mutation function to update station information with admin authorization",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-user"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Update function requires admin authorization",
+        "Function accepts title and description parameters",
+        "Station information is persisted across canister upgrades"
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "text": "Add React Query hooks for fetching and updating station information",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user"
+        ]
+      },
+      "acceptanceCriteria": [
+        "useGetStationInfo hook fetches current station information",
+        "useUpdateStationInfo mutation hook updates station content",
+        "Hooks follow existing patterns in useQueries.ts"
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "text": "Add navigation link to the Manage Station Info page from the Admin Dashboard",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Card or link appears on Admin Dashboard for 'Manage Station Info'",
+        "Link navigates to the new admin page",
+        "Icon and styling match existing admin dashboard items"
+      ]
+    }
+  ],
+  "constraints": [
+    "Use existing authorization patterns from backend/main.mo for admin-only mutations",
+    "Follow existing Card component patterns from AboutPage.tsx for consistent UI",
+    "Maintain Christmas-themed styling throughout new components"
+  ],
+  "nonGoals": [
+    "Rich text editor or markdown support",
+    "Image uploads for station info section",
+    "Version history or revision tracking",
+    "Public API for station information"
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  }
+}
