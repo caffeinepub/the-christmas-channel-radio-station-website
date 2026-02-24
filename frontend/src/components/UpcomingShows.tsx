@@ -181,6 +181,11 @@ export default function UpcomingShows() {
               <div className="max-h-20 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-christmas-gold scrollbar-track-gray-100">
                 <p className="text-sm text-gray-700 leading-relaxed">{slot.program.description}</p>
               </div>
+              {slot.program.bio && (
+                <p className="text-sm text-gray-500 italic mt-2 pt-2 border-t border-christmas-gold/20 leading-relaxed">
+                  {slot.program.bio}
+                </p>
+              )}
             </div>
           ))}
         </div>

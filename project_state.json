@@ -1,24 +1,32 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "A Program Schedule app with weekday program slots functionality.",
+  "summary": "Project involves a TV/media schedule application with shows and program slots. Working on adding bios to each show.",
   "architectural_notes": [],
   "known_issues": [],
   "isFixRequest": false,
   "existing_features": [
     {
-      "id": "feature-update-the-manageprograms-admin-page-to-allow-admins-to-create-edit-and-delete-program-slots-specifically-for-weekdays-monday-friday-the-add-edit-dialog-form-must-include-a-day-of-week-selector-field-offering-at-minimum-the-five-weekday-options",
-      "title": "Update the ManagePrograms admin page to allow admins to create, edit, and delete program slots specifically for weekdays (Monday–Friday). The add/edit dialog form must include a day-of-week selector field offering at minimum the five weekday options.",
+      "id": "feature-update-the-manageprograms-admin-page-to-include-a-bio-description-input-field-in-the-add-edit-program-dialog-form-allowing-admins-to-enter-and-save-a-bio-for-each-show",
+      "title": "Update the ManagePrograms admin page to include a bio/description input field in the add/edit program dialog form, allowing admins to enter and save a bio for each show.",
       "reqIds": [
         "REQ-2"
       ],
       "version": 1
     },
     {
-      "id": "feature-update-the-public-schedulepage-to-display-program-slots-grouped-or-labeled-by-weekday-monday-through-friday-so-listeners-can-browse-what-shows-are-scheduled-on-each-day-of-the-week",
-      "title": "Update the public SchedulePage to display program slots grouped or labeled by weekday (Monday through Friday), so listeners can browse what shows are scheduled on each day of the week.",
+      "id": "feature-display-each-show-s-bio-on-the-public-schedulepage-shown-beneath-or-alongside-the-show-name-time-for-programs-that-have-a-bio-entered",
+      "title": "Display each show's bio on the public SchedulePage, shown beneath or alongside the show name/time for programs that have a bio entered.",
       "reqIds": [
         "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-display-each-show-s-bio-in-the-upcomingshows-component-when-a-show-has-a-bio-shown-beneath-the-show-name",
+      "title": "Display each show's bio in the UpcomingShows component when a show has a bio, shown beneath the show name.",
+      "reqIds": [
+        "REQ-4"
       ],
       "version": 1
     }
@@ -26,13 +34,13 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Add weekday program slots to Program Schedule",
+      "summary": "Add a bio/description to each show in the schedule",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-2",
-      "summary": "Update the backend Program data model and schedule storage to support weekday-specific program slots, allowing programs to be assigned to specific weekdays (Monday through Friday) with start time, end time, name, and description fields.",
+      "summary": "Add a `bio` (or `description`) text field to the Program data type in the backend so each show can store a bio/description string.",
       "reqIds": [
         "REQ-1"
       ],
@@ -40,7 +48,7 @@
     }
   ],
   "gameProjectType": "none",
-  "projectName": "Program Schedule",
+  "projectName": "Christmas Channel Radio",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

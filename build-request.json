@@ -1,73 +1,92 @@
 {
   "kind": "build_request",
-  "title": "Add weekday program slots to Program Schedule",
+  "title": "Add bio/description field to each program/show in the schedule",
   "projectName": "Christmas Channel Radio",
   "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Update the backend Program data model and schedule storage to support weekday-specific program slots, allowing programs to be assigned to specific weekdays (Monday through Friday) with start time, end time, name, and description fields.",
+      "text": "Add a `bio` (or `description`) text field to the Program data type in the backend so each show can store a bio/description string.",
       "target": "backend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "msg-6"
         ],
         "quotes": [
-          "Add a weekday program slots for Program Schedule"
+          "also add each bio to each show"
         ]
       },
       "acceptanceCriteria": [
-        "Program data type includes a day field that accepts weekday values (Monday, Tuesday, Wednesday, Thursday, Friday) in addition to any existing day formats",
-        "Multiple program slots can be created for different weekdays",
-        "Existing weekend or all-day programs are unaffected by the change"
+        "The Program (or ProgramDaySlot) type in backend/main.mo includes a `bio` field of type Text.",
+        "Existing create/update endpoints for programs accept and persist the bio field.",
+        "Query endpoints for programs return the bio field.",
+        "Existing programs without a bio default to an empty string."
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Update the ManagePrograms admin page to allow admins to create, edit, and delete program slots specifically for weekdays (Monday–Friday). The add/edit dialog form must include a day-of-week selector field offering at minimum the five weekday options.",
+      "text": "Update the ManagePrograms admin page to include a bio/description input field in the add/edit program dialog form, allowing admins to enter and save a bio for each show.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "msg-6"
         ],
         "quotes": [
-          "Add a weekday program slots for Program Schedule"
+          "also add each bio to each show"
         ]
       },
       "acceptanceCriteria": [
-        "The add/edit program dialog includes a day selector with at least Monday, Tuesday, Wednesday, Thursday, and Friday as options",
-        "Saving a program with a weekday selection persists the correct day to the backend",
-        "Weekday programs appear in the program list with their associated day label"
+        "The add/edit dialog in ManagePrograms includes a textarea or text input labeled 'Bio' or 'Description'.",
+        "The bio value is submitted with the rest of the program form data.",
+        "When editing an existing program, the bio field is pre-populated with the current bio value.",
+        "The bio field is optional (not required to save a program)."
       ]
     },
     {
       "id": "REQ-3",
-      "text": "Update the public SchedulePage to display program slots grouped or labeled by weekday (Monday through Friday), so listeners can browse what shows are scheduled on each day of the week.",
+      "text": "Display each show's bio on the public SchedulePage, shown beneath or alongside the show name/time for programs that have a bio entered.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "msg-6"
         ],
         "quotes": [
-          "Add a weekday program slots for Program Schedule"
+          "also add each bio to each show"
         ]
       },
       "acceptanceCriteria": [
-        "The Schedule page shows program entries with their associated weekday clearly labeled",
-        "Programs are visually grouped or sorted by weekday (Mon–Fri)",
-        "If no programs are scheduled for a weekday, that day shows an appropriate empty state or is omitted",
-        "The OnAirDisplay and UpcomingShows components correctly match current weekday programs against the current day and time"
+        "Shows with a non-empty bio display the bio text on the SchedulePage.",
+        "Shows without a bio do not show an empty bio section.",
+        "Bio text is styled consistently with the existing schedule card design."
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Display each show's bio in the UpcomingShows component when a show has a bio, shown beneath the show name.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-6"
+        ],
+        "quotes": [
+          "also add each bio to each show"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Upcoming show cards display the bio if one exists.",
+        "Cards without a bio are unaffected in layout.",
+        "Bio text does not overflow or break the card layout."
       ]
     }
   ],
   "constraints": [
-    "Do not modify files under frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, or frontend/src/components/ui",
-    "All backend logic must remain in the single actor in backend/main.mo"
+    "Do not break existing program schedule data or the weekday slot structure introduced in previous versions.",
+    "The bio field must be optional and backward-compatible with existing stored programs."
   ],
   "nonGoals": [
-    "Adding weekend (Saturday/Sunday) program slots",
-    "Changing the overall Christmas-themed visual design",
-    "Modifying the Live365 stream player or NowPlaying integration"
+    "Adding bios to DJ profiles (already a separate feature on the DJs page).",
+    "Rich text / HTML formatting for bios — plain text only.",
+    "Adding bios to song requests or other non-program entities."
   ],
   "imageRequirements": {
     "required": [],

@@ -34,6 +34,7 @@ export interface OnAirOverride {
   'description' : string,
 }
 export interface Program {
+  'bio' : string,
   'startTime' : string,
   'endTime' : string,
   'name' : string,
@@ -108,7 +109,7 @@ export interface _SERVICE {
   '_caffeineStorageUpdateGatewayPrincipals' : ActorMethod<[], undefined>,
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
   'addCustomProgram' : ActorMethod<
-    [string, string, string, string, Array<string>],
+    [string, string, string, string, string, Array<string>],
     undefined
   >,
   'addDJProfile' : ActorMethod<[string, string, ExternalBlob], undefined>,
@@ -144,7 +145,7 @@ export interface _SERVICE {
   'updateDJProfile' : ActorMethod<[string, string, ExternalBlob], undefined>,
   'updateNowPlaying' : ActorMethod<[string, string], undefined>,
   'updateProgram' : ActorMethod<
-    [string, string, string, string, string, string],
+    [string, string, string, string, string, string, string],
     undefined
   >,
   'updateStationInformation' : ActorMethod<[StationInformation], undefined>,

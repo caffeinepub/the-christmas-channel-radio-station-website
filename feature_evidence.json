@@ -2,8 +2,8 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-update-the-manageprograms-admin-page-to-allow-admins-to-create-edit-and-delete-program-slots-specifically-for-weekdays-monday-friday-the-add-edit-dialog-form-must-include-a-day-of-week-selector-field-offering-at-minimum-the-five-weekday-options",
-      "featureTitle": "Update the ManagePrograms admin page to allow admins to create, edit, and delete program slots specifically for weekdays (Monday–Friday). The add/edit dialog form must include a day-of-week selector field offering at minimum the five weekday options.",
+      "featureId": "feature-update-the-manageprograms-admin-page-to-include-a-bio-description-input-field-in-the-add-edit-program-dialog-form-allowing-admins-to-enter-and-save-a-bio-for-each-show",
+      "featureTitle": "Update the ManagePrograms admin page to include a bio/description input field in the add/edit program dialog form, allowing admins to enter and save a bio for each show.",
       "files": [
         "frontend/src/pages/admin/ManagePrograms.tsx"
       ],
@@ -23,11 +23,9 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-update-the-public-schedulepage-to-display-program-slots-grouped-or-labeled-by-weekday-monday-through-friday-so-listeners-can-browse-what-shows-are-scheduled-on-each-day-of-the-week",
-      "featureTitle": "Update the public SchedulePage to display program slots grouped or labeled by weekday (Monday through Friday), so listeners can browse what shows are scheduled on each day of the week.",
+      "featureId": "feature-display-each-show-s-bio-on-the-public-schedulepage-shown-beneath-or-alongside-the-show-name-time-for-programs-that-have-a-bio-entered",
+      "featureTitle": "Display each show's bio on the public SchedulePage, shown beneath or alongside the show name/time for programs that have a bio entered.",
       "files": [
-        "frontend/src/components/OnAirDisplay.tsx",
-        "frontend/src/components/UpcomingShows.tsx",
         "frontend/src/pages/SchedulePage.tsx"
       ],
       "components": [
@@ -42,6 +40,27 @@
       ],
       "testIds": [
         "REQ-3"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-display-each-show-s-bio-in-the-upcomingshows-component-when-a-show-has-a-bio-shown-beneath-the-show-name",
+      "featureTitle": "Display each show's bio in the UpcomingShows component when a show has a bio, shown beneath the show name.",
+      "files": [
+        "frontend/src/components/UpcomingShows.tsx"
+      ],
+      "components": [
+        "blob-storage@4.0.0",
+        "authorization@4.0.0",
+        "http-outcalls@3.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-4"
       ],
       "confidence": "high"
     }

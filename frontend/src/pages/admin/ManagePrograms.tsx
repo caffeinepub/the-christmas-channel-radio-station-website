@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft, Plus, Edit, Trash2, Calendar } from 'lucide-react';
@@ -41,6 +40,7 @@ export default function ManagePrograms() {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
+    bio: '',
     startTime: '',
     endTime: '',
     day: 'Monday',
@@ -52,13 +52,14 @@ export default function ManagePrograms() {
       setFormData({
         name: slot.program.name,
         description: slot.program.description,
+        bio: slot.program.bio || '',
         startTime: slot.program.startTime,
         endTime: slot.program.endTime,
         day: slot.day,
       });
     } else {
       setEditingSlot(null);
-      setFormData({ name: '', description: '', startTime: '', endTime: '', day: 'Monday' });
+      setFormData({ name: '', description: '', bio: '', startTime: '', endTime: '', day: 'Monday' });
     }
     setDialogOpen(true);
   };
@@ -67,7 +68,7 @@ export default function ManagePrograms() {
     e.preventDefault();
 
     if (!formData.name.trim() || !formData.description.trim() || !formData.startTime.trim() || !formData.endTime.trim()) {
-      toast.error('Please fill in all fields');
+      toast.error('Please fill in all required fields');
       return;
     }
 
@@ -76,6 +77,7 @@ export default function ManagePrograms() {
         await updateProgram.mutateAsync({
           name: formData.name.trim(),
           description: formData.description.trim(),
+          bio: formData.bio.trim(),
           startTime: formData.startTime.trim(),
           endTime: formData.endTime.trim(),
           oldDay: editingSlot.day,
@@ -86,6 +88,7 @@ export default function ManagePrograms() {
         await addProgram.mutateAsync({
           name: formData.name.trim(),
           description: formData.description.trim(),
+          bio: formData.bio.trim(),
           startTime: formData.startTime.trim(),
           endTime: formData.endTime.trim(),
           days: [formData.day],
@@ -94,7 +97,7 @@ export default function ManagePrograms() {
       }
 
       setDialogOpen(false);
-      setFormData({ name: '', description: '', startTime: '', endTime: '', day: 'Monday' });
+      setFormData({ name: '', description: '', bio: '', startTime: '', endTime: '', day: 'Monday' });
     } catch (error: any) {
       console.error('Error saving program:', error);
       toast.error(error.message || 'Failed to save program');
@@ -199,6 +202,11 @@ export default function ManagePrograms() {
                               {slot.program.startTime} – {slot.program.endTime}
                             </p>
                             <p className="text-gray-600 text-sm line-clamp-2">{slot.program.description}</p>
+                            {slot.program.bio && (
+                              <p className="text-gray-500 text-xs italic mt-1 line-clamp-2">
+                                Bio: {slot.program.bio}
+                              </p>
+                            )}
                           </div>
                           <div className="flex gap-2 ml-4 shrink-0">
                             <Button
@@ -279,12 +287,26 @@ export default function ManagePrograms() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description">Description <span className="text-christmas-red">*</span></Label>
                 <Textarea
                   id="description"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   placeholder="Enter program description"
+                  rows={2}
+                  className="border-christmas-gold"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="bio">
+                  Bio <span className="text-gray-400 text-xs font-normal">(optional)</span>
+                </Label>
+                <Textarea
+                  id="bio"
+                  value={formData.bio}
+                  onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                  placeholder="Enter a short bio or background for this show..."
                   rows={3}
                   className="border-christmas-gold"
                 />

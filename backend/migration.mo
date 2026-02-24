@@ -1,21 +1,12 @@
 import Map "mo:core/Map";
-import List "mo:core/List";
-import Nat "mo:core/Nat";
+import Storage "blob-storage/Storage";
 import Text "mo:core/Text";
-import Array "mo:core/Array";
 
 module {
-  type DJProfile = {
+  type OldDJProfile = {
     name : Text;
     bio : Text;
-    photoUrl : Blob;
-  };
-
-  // Old types (pre-migration)
-  type OldActor = {
-    djProfiles : Map.Map<Text, DJProfile>;
-    programSchedule : Map.Map<Text, OldProgram>;
-    // ... (other fields remain unchanged)
+    photoUrl : Storage.ExternalBlob;
   };
 
   type OldProgram = {
@@ -25,34 +16,62 @@ module {
     endTime : Text;
   };
 
-  // New types (post-migration)
-  type NewActor = {
-    djProfiles : Map.Map<Text, DJProfile>;
-    programSchedule : Map.Map<Text, [NewProgramDaySlot]>;
-    // ... (other fields remain unchanged)
-  };
-
-  type NewProgramDaySlot = {
+  type OldProgramDaySlot = {
     day : Text;
     program : OldProgram;
   };
 
+  type OldProgramEntry = {
+    program : OldProgram;
+    days : [Text];
+  };
+
+  type OldActor = {
+    djProfiles : Map.Map<Text, OldDJProfile>;
+    programSchedule : Map.Map<Text, [OldProgramDaySlot]>;
+  };
+
+  // New types matching updated actor's structure
+  type NewProgram = {
+    name : Text;
+    description : Text;
+    bio : Text;
+    startTime : Text;
+    endTime : Text;
+  };
+
+  type NewProgramDaySlot = {
+    day : Text;
+    program : NewProgram;
+  };
+
+  type NewActor = {
+    djProfiles : Map.Map<Text, OldDJProfile>;
+    programSchedule : Map.Map<Text, [NewProgramDaySlot]>;
+  };
+
   public func run(old : OldActor) : NewActor {
-    let newProgramSchedule = old.programSchedule.map<Text, OldProgram, [NewProgramDaySlot]>(
-      func(_, oldProgram) {
-        [
-          { day = "Monday"; program = oldProgram },
-          { day = "Tuesday"; program = oldProgram },
-          { day = "Wednesday"; program = oldProgram },
-          { day = "Thursday"; program = oldProgram },
-          { day = "Friday"; program = oldProgram },
-        ];
+    // Convert old programs to new programs with bio field
+    let convertedProgramSchedule = old.programSchedule.map<Text, [OldProgramDaySlot], [NewProgramDaySlot]>(
+      func(_id, oldDaySlots) {
+        oldDaySlots.map(
+          func(oldSlot) {
+            {
+              day = oldSlot.day;
+              program = {
+                oldSlot.program with
+                bio = ""; // Default bio for existing data
+              };
+            };
+          }
+        );
       }
     );
 
     {
-      old with
-      programSchedule = newProgramSchedule;
+      djProfiles = old.djProfiles;
+      programSchedule = convertedProgramSchedule;
     };
   };
 };
+

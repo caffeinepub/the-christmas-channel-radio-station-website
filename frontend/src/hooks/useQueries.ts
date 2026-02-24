@@ -315,7 +315,7 @@ export function useDeleteDJProfile() {
   });
 }
 
-// Mutation: Add custom program (with days array)
+// Mutation: Add custom program (with days array and bio)
 export function useAddCustomProgram() {
   const { actor } = useActor();
   const queryClient = useQueryClient();
@@ -324,18 +324,20 @@ export function useAddCustomProgram() {
     mutationFn: async ({
       name,
       description,
+      bio,
       startTime,
       endTime,
       days,
     }: {
       name: string;
       description: string;
+      bio: string;
       startTime: string;
       endTime: string;
       days: string[];
     }) => {
       if (!actor) throw new Error('Actor not initialized');
-      return actor.addCustomProgram(name, description, startTime, endTime, days);
+      return actor.addCustomProgram(name, description, bio, startTime, endTime, days);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['programSchedule'] });
@@ -343,7 +345,7 @@ export function useAddCustomProgram() {
   });
 }
 
-// Mutation: Update program (with oldDay/newDay)
+// Mutation: Update program (with oldDay/newDay and bio)
 export function useUpdateProgram() {
   const { actor } = useActor();
   const queryClient = useQueryClient();
@@ -352,6 +354,7 @@ export function useUpdateProgram() {
     mutationFn: async ({
       name,
       description,
+      bio,
       startTime,
       endTime,
       oldDay,
@@ -359,13 +362,14 @@ export function useUpdateProgram() {
     }: {
       name: string;
       description: string;
+      bio: string;
       startTime: string;
       endTime: string;
       oldDay: string;
       newDay: string;
     }) => {
       if (!actor) throw new Error('Actor not initialized');
-      return actor.updateProgram(name, description, startTime, endTime, oldDay, newDay);
+      return actor.updateProgram(name, description, bio, startTime, endTime, oldDay, newDay);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['programSchedule'] });

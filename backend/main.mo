@@ -9,12 +9,12 @@ import Time "mo:core/Time";
 import Map "mo:core/Map";
 import List "mo:core/List";
 import Migration "migration";
+
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
 
 // Specify the data migration function in with-clause.
-(with migration = Migration.run)
-actor {
+(with migration = Migration.run) actor {
   include MixinStorage();
 
   public type DJProfile = {
@@ -26,6 +26,7 @@ actor {
   public type Program = {
     name : Text;
     description : Text;
+    bio : Text; // New field for show bio
     startTime : Text;
     endTime : Text;
   };
@@ -117,7 +118,7 @@ actor {
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
 
-  let djProfiles = Map.empty<Text, DJProfile>();
+  var djProfiles = Map.empty<Text, DJProfile>();
 
   var programSchedule = Map.empty<Text, [ProgramDaySlot]>();
 
@@ -228,6 +229,7 @@ actor {
   public shared ({ caller }) func addCustomProgram(
     name : Text,
     description : Text,
+    bio : Text, // Add bio parameter
     startTime : Text,
     endTime : Text,
     days : [Text],
@@ -242,7 +244,7 @@ actor {
     };
 
     let newEntries = existingEntries.concat(
-      days.map(func(day) { { day; program = { name; description; startTime; endTime } } })
+      days.map(func(day) { { day; program = { name; description; bio; startTime; endTime } } })
     );
 
     programSchedule.add(name, newEntries);
@@ -251,6 +253,7 @@ actor {
   public shared ({ caller }) func updateProgram(
     name : Text,
     description : Text,
+    bio : Text, // Add bio parameter
     startTime : Text,
     endTime : Text,
     oldDay : Text, // Day to be updated
@@ -267,7 +270,7 @@ actor {
             if (entry.day == oldDay) {
               {
                 day = newDay;
-                program = { name; description; startTime; endTime };
+                program = { name; description; bio; startTime; endTime };
               };
             } else {
               entry;
@@ -461,3 +464,4 @@ actor {
     filteredPrograms.sort(Program.compareByStartTime);
   };
 };
+

@@ -48,6 +48,7 @@ export const OnAirOverride = IDL.Record({
   'description' : IDL.Text,
 });
 export const Program = IDL.Record({
+  'bio' : IDL.Text,
   'startTime' : IDL.Text,
   'endTime' : IDL.Text,
   'name' : IDL.Text,
@@ -130,7 +131,7 @@ export const idlService = IDL.Service({
   '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
   'addCustomProgram' : IDL.Func(
-      [IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Vec(IDL.Text)],
+      [IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Vec(IDL.Text)],
       [],
       [],
     ),
@@ -176,7 +177,7 @@ export const idlService = IDL.Service({
   'updateDJProfile' : IDL.Func([IDL.Text, IDL.Text, ExternalBlob], [], []),
   'updateNowPlaying' : IDL.Func([IDL.Text, IDL.Text], [], []),
   'updateProgram' : IDL.Func(
-      [IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text],
+      [IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text],
       [],
       [],
     ),
@@ -236,6 +237,7 @@ export const idlFactory = ({ IDL }) => {
     'description' : IDL.Text,
   });
   const Program = IDL.Record({
+    'bio' : IDL.Text,
     'startTime' : IDL.Text,
     'endTime' : IDL.Text,
     'name' : IDL.Text,
@@ -315,7 +317,7 @@ export const idlFactory = ({ IDL }) => {
     '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
     'addCustomProgram' : IDL.Func(
-        [IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Vec(IDL.Text)],
+        [IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Vec(IDL.Text)],
         [],
         [],
       ),
@@ -365,7 +367,7 @@ export const idlFactory = ({ IDL }) => {
     'updateDJProfile' : IDL.Func([IDL.Text, IDL.Text, ExternalBlob], [], []),
     'updateNowPlaying' : IDL.Func([IDL.Text, IDL.Text], [], []),
     'updateProgram' : IDL.Func(
-        [IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text],
+        [IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text],
         [],
         [],
       ),

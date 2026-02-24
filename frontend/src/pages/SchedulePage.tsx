@@ -4,7 +4,6 @@ import { useGetProgramSchedule } from '../hooks/useQueries';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { ProgramDaySlot } from '../backend';
 
-const WEEKDAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 const ALL_DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
 const DAY_ACCENT: Record<string, { bg: string; border: string; badge: string; dot: string }> = {
@@ -51,118 +50,114 @@ export default function SchedulePage() {
           <h1 className="text-4xl md:text-5xl font-bold text-christmas-dark mb-4 font-christmas">
             Program Schedule
           </h1>
-          <p className="text-xl text-gray-600">
-            Your weekly dose of festive programming
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Tune in to your favorite shows — here's what's on the air this week.
           </p>
         </div>
 
-        {/* Weekday quick-nav pills */}
-        {!isLoading && orderedDays.length > 0 && (
-          <div className="flex flex-wrap gap-2 justify-center mb-8">
-            {orderedDays.map((day) => {
-              const accent = DAY_ACCENT[day] || { badge: 'bg-gray-500 text-white', dot: 'bg-gray-400' };
-              const isToday = day === currentDay;
-              return (
-                <a
-                  key={day}
-                  href={`#day-${day}`}
-                  className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-all ${accent.badge} ${isToday ? 'ring-2 ring-offset-2 ring-christmas-gold shadow-lg scale-105' : 'opacity-80 hover:opacity-100'}`}
-                >
-                  {isToday ? `📅 ${day} (Today)` : day}
-                </a>
-              );
-            })}
-          </div>
-        )}
-
-        {/* Schedule grouped by day */}
-        <div className="space-y-10">
-          {isLoading ? (
-            <>
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="space-y-3">
-                  <Skeleton className="h-8 w-32 rounded-full" />
-                  {[1, 2].map((j) => (
-                    <Card key={j} className="bg-white/95 backdrop-blur-sm border-christmas-gold border-2">
-                      <div className="p-6">
-                        <div className="flex gap-6">
-                          <Skeleton className="h-16 w-24" />
-                          <div className="flex-1 space-y-2">
-                            <Skeleton className="h-6 w-48" />
-                            <Skeleton className="h-4 w-full" />
-                          </div>
-                        </div>
-                      </div>
-                    </Card>
-                  ))}
-                </div>
-              ))}
-            </>
-          ) : orderedDays.length > 0 ? (
-            orderedDays.map((day) => {
-              const accent = DAY_ACCENT[day] || { bg: 'from-gray-50 to-white', border: 'border-gray-200', badge: 'bg-gray-500 text-white', dot: 'bg-gray-400' };
-              const isToday = day === currentDay;
-              return (
-                <section key={day} id={`day-${day}`}>
-                  {/* Day header */}
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className={`flex items-center gap-2 px-5 py-2 rounded-full font-bold text-base shadow-sm ${accent.badge}`}>
-                      {isToday && <span className="inline-block w-2 h-2 rounded-full bg-white animate-pulse" />}
-                      {day}
-                      {isToday && <span className="text-xs font-normal opacity-90 ml-1">Today</span>}
-                    </div>
-                    <div className="flex-1 h-px bg-christmas-gold/30" />
-                    <span className="text-xs text-gray-400">
-                      {slotsByDay[day].length} show{slotsByDay[day].length !== 1 ? 's' : ''}
-                    </span>
-                  </div>
-
-                  <div className="space-y-3 pl-2">
-                    {slotsByDay[day].map((slot, index) => (
-                      <Card
-                        key={`${slot.program.name}-${slot.day}-${index}`}
-                        className={`bg-gradient-to-r ${accent.bg} backdrop-blur-sm ${accent.border} border-2 hover:shadow-xl transition-shadow`}
-                      >
-                        <div className="p-6">
-                          <div className="flex flex-col md:flex-row gap-4">
-                            {/* Time */}
-                            <div className="flex items-center gap-2 md:w-44 shrink-0">
-                              <Clock className="h-5 w-5 text-christmas-red shrink-0" />
-                              <div className="font-bold text-christmas-dark">
-                                <div className="text-base">{slot.program.startTime}</div>
-                                <div className="text-sm text-gray-500">to {slot.program.endTime}</div>
-                              </div>
-                            </div>
-
-                            {/* Program Details */}
-                            <div className="flex-1 min-w-0">
-                              <h3 className="text-xl font-bold text-christmas-dark mb-1 font-christmas">
-                                {slot.program.name}
-                              </h3>
-                              <div className="max-h-28 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-christmas-gold scrollbar-track-gray-100">
-                                <p className="text-gray-600 leading-relaxed text-sm">
-                                  {slot.program.description}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </Card>
-                    ))}
-                  </div>
-                </section>
-              );
-            })
-          ) : (
-            <Card className="bg-white/95 backdrop-blur-sm border-christmas-gold border-2">
-              <div className="p-12 text-center">
-                <Calendar className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-gray-600 mb-2">No Programs Scheduled</h3>
-                <p className="text-gray-500">Check back soon for our festive programming lineup!</p>
+        {isLoading ? (
+          <div className="space-y-8">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="space-y-3">
+                <Skeleton className="h-8 w-32 rounded-full" />
+                <Skeleton className="h-28 w-full rounded-xl" />
+                <Skeleton className="h-28 w-full rounded-xl" />
               </div>
-            </Card>
-          )}
-        </div>
+            ))}
+          </div>
+        ) : orderedDays.length === 0 ? (
+          <Card className="bg-white/95 backdrop-blur-sm border-christmas-gold border-2 p-12 text-center">
+            <Calendar className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+            <p className="text-gray-500 text-lg">No programs scheduled yet. Check back soon!</p>
+          </Card>
+        ) : (
+          <>
+            {/* Quick-nav day pills */}
+            <div className="flex flex-wrap gap-2 justify-center mb-10">
+              {orderedDays.map((day) => {
+                const accent = DAY_ACCENT[day] || DAY_ACCENT['Monday'];
+                const isToday = day === currentDay;
+                return (
+                  <a
+                    key={day}
+                    href={`#day-${day}`}
+                    className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-all ${
+                      isToday
+                        ? `${accent.badge} shadow-md ring-2 ring-offset-1 ring-current`
+                        : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-400'
+                    }`}
+                  >
+                    {isToday ? `📍 ${day}` : day}
+                  </a>
+                );
+              })}
+            </div>
+
+            <div className="space-y-10">
+              {orderedDays.map((day) => {
+                const accent = DAY_ACCENT[day] || DAY_ACCENT['Monday'];
+                const isToday = day === currentDay;
+
+                return (
+                  <section key={day} id={`day-${day}`}>
+                    {/* Day header */}
+                    <div className="flex items-center gap-3 mb-4">
+                      <span className={`px-5 py-1.5 rounded-full text-sm font-bold ${accent.badge}`}>
+                        {day}
+                      </span>
+                      {isToday && (
+                        <span className="text-xs font-semibold text-christmas-red bg-christmas-red/10 px-3 py-1 rounded-full border border-christmas-red/20">
+                          Today
+                        </span>
+                      )}
+                      <div className="flex-1 h-px bg-gray-200" />
+                      <span className="text-xs text-gray-400">
+                        {slotsByDay[day].length} show{slotsByDay[day].length !== 1 ? 's' : ''}
+                      </span>
+                    </div>
+
+                    {/* Slots */}
+                    <div className="space-y-3 pl-1">
+                      {slotsByDay[day].map((slot) => (
+                        <Card
+                          key={`${slot.program.name}-${slot.day}`}
+                          className={`bg-gradient-to-r ${accent.bg} ${accent.border} border-2 hover:shadow-lg transition-shadow`}
+                        >
+                          <div className="p-5">
+                            <div className="flex items-start gap-3">
+                              <div className={`mt-1.5 h-2.5 w-2.5 rounded-full shrink-0 ${accent.dot}`} />
+                              <div className="flex-1 min-w-0">
+                                <h3 className="text-lg font-bold text-christmas-dark font-christmas leading-tight">
+                                  {slot.program.name}
+                                </h3>
+                                <div className="flex items-center gap-1.5 mt-0.5 mb-2">
+                                  <Clock className="h-3.5 w-3.5 text-gray-400 shrink-0" />
+                                  <span className="text-sm font-medium text-christmas-red">
+                                    {slot.program.startTime} – {slot.program.endTime}
+                                  </span>
+                                </div>
+                                {slot.program.description && (
+                                  <p className="text-sm text-gray-600 leading-relaxed">
+                                    {slot.program.description}
+                                  </p>
+                                )}
+                                {slot.program.bio && (
+                                  <p className="text-sm text-gray-500 italic mt-2 leading-relaxed border-t border-gray-200/80 pt-2">
+                                    {slot.program.bio}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </Card>
+                      ))}
+                    </div>
+                  </section>
+                );
+              })}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

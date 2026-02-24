@@ -134,6 +134,7 @@ export interface StationInformation {
     description: string;
 }
 export interface Program {
+    bio: string;
     startTime: string;
     endTime: string;
     name: string;
@@ -192,7 +193,7 @@ export interface backendInterface {
     _caffeineStorageRefillCashier(refillInformation: _CaffeineStorageRefillInformation | null): Promise<_CaffeineStorageRefillResult>;
     _caffeineStorageUpdateGatewayPrincipals(): Promise<void>;
     _initializeAccessControlWithSecret(userSecret: string): Promise<void>;
-    addCustomProgram(name: string, description: string, startTime: string, endTime: string, days: Array<string>): Promise<void>;
+    addCustomProgram(name: string, description: string, bio: string, startTime: string, endTime: string, days: Array<string>): Promise<void>;
     addDJProfile(name: string, bio: string, photo: ExternalBlob): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     clearNowPlaying(): Promise<void>;
@@ -222,7 +223,7 @@ export interface backendInterface {
     submitSongRequest(songRequest: SongRequest): Promise<void>;
     updateDJProfile(name: string, bio: string, photo: ExternalBlob): Promise<void>;
     updateNowPlaying(title: string, artist: string): Promise<void>;
-    updateProgram(name: string, description: string, startTime: string, endTime: string, oldDay: string, newDay: string): Promise<void>;
+    updateProgram(name: string, description: string, bio: string, startTime: string, endTime: string, oldDay: string, newDay: string): Promise<void>;
     updateStationInformation(stationInfo: StationInformation): Promise<void>;
     updateThemeSettings(showCountdown: boolean, showNewsFeed: boolean, snowEnabled: boolean, backgroundImage: BackgroundImage, primaryColor: TailwindColor, accentColor: TailwindColor): Promise<void>;
     updateWeatherData(newWeatherData: WeatherData): Promise<void>;
@@ -328,17 +329,17 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async addCustomProgram(arg0: string, arg1: string, arg2: string, arg3: string, arg4: Array<string>): Promise<void> {
+    async addCustomProgram(arg0: string, arg1: string, arg2: string, arg3: string, arg4: string, arg5: Array<string>): Promise<void> {
         if (this.processError) {
             try {
-                const result = await this.actor.addCustomProgram(arg0, arg1, arg2, arg3, arg4);
+                const result = await this.actor.addCustomProgram(arg0, arg1, arg2, arg3, arg4, arg5);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.addCustomProgram(arg0, arg1, arg2, arg3, arg4);
+            const result = await this.actor.addCustomProgram(arg0, arg1, arg2, arg3, arg4, arg5);
             return result;
         }
     }
@@ -748,17 +749,17 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async updateProgram(arg0: string, arg1: string, arg2: string, arg3: string, arg4: string, arg5: string): Promise<void> {
+    async updateProgram(arg0: string, arg1: string, arg2: string, arg3: string, arg4: string, arg5: string, arg6: string): Promise<void> {
         if (this.processError) {
             try {
-                const result = await this.actor.updateProgram(arg0, arg1, arg2, arg3, arg4, arg5);
+                const result = await this.actor.updateProgram(arg0, arg1, arg2, arg3, arg4, arg5, arg6);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.updateProgram(arg0, arg1, arg2, arg3, arg4, arg5);
+            const result = await this.actor.updateProgram(arg0, arg1, arg2, arg3, arg4, arg5, arg6);
             return result;
         }
     }

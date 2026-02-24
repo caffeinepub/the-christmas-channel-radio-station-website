@@ -48,6 +48,7 @@ export interface StationInformation {
     description: string;
 }
 export interface Program {
+    bio: string;
     startTime: string;
     endTime: string;
     name: string;
@@ -99,7 +100,7 @@ export enum UserRole {
     guest = "guest"
 }
 export interface backendInterface {
-    addCustomProgram(name: string, description: string, startTime: string, endTime: string, days: Array<string>): Promise<void>;
+    addCustomProgram(name: string, description: string, bio: string, startTime: string, endTime: string, days: Array<string>): Promise<void>;
     addDJProfile(name: string, bio: string, photo: ExternalBlob): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     clearNowPlaying(): Promise<void>;
@@ -129,7 +130,7 @@ export interface backendInterface {
     submitSongRequest(songRequest: SongRequest): Promise<void>;
     updateDJProfile(name: string, bio: string, photo: ExternalBlob): Promise<void>;
     updateNowPlaying(title: string, artist: string): Promise<void>;
-    updateProgram(name: string, description: string, startTime: string, endTime: string, oldDay: string, newDay: string): Promise<void>;
+    updateProgram(name: string, description: string, bio: string, startTime: string, endTime: string, oldDay: string, newDay: string): Promise<void>;
     updateStationInformation(stationInfo: StationInformation): Promise<void>;
     updateThemeSettings(showCountdown: boolean, showNewsFeed: boolean, snowEnabled: boolean, backgroundImage: BackgroundImage, primaryColor: TailwindColor, accentColor: TailwindColor): Promise<void>;
     updateWeatherData(newWeatherData: WeatherData): Promise<void>;
