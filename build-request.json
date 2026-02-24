@@ -1,0 +1,76 @@
+{
+  "kind": "build_request",
+  "title": "Add weekday program slots to Program Schedule",
+  "projectName": "Christmas Channel Radio",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Update the backend Program data model and schedule storage to support weekday-specific program slots, allowing programs to be assigned to specific weekdays (Monday through Friday) with start time, end time, name, and description fields.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "Add a weekday program slots for Program Schedule"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Program data type includes a day field that accepts weekday values (Monday, Tuesday, Wednesday, Thursday, Friday) in addition to any existing day formats",
+        "Multiple program slots can be created for different weekdays",
+        "Existing weekend or all-day programs are unaffected by the change"
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Update the ManagePrograms admin page to allow admins to create, edit, and delete program slots specifically for weekdays (Monday–Friday). The add/edit dialog form must include a day-of-week selector field offering at minimum the five weekday options.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "Add a weekday program slots for Program Schedule"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The add/edit program dialog includes a day selector with at least Monday, Tuesday, Wednesday, Thursday, and Friday as options",
+        "Saving a program with a weekday selection persists the correct day to the backend",
+        "Weekday programs appear in the program list with their associated day label"
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Update the public SchedulePage to display program slots grouped or labeled by weekday (Monday through Friday), so listeners can browse what shows are scheduled on each day of the week.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "Add a weekday program slots for Program Schedule"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The Schedule page shows program entries with their associated weekday clearly labeled",
+        "Programs are visually grouped or sorted by weekday (Mon–Fri)",
+        "If no programs are scheduled for a weekday, that day shows an appropriate empty state or is omitted",
+        "The OnAirDisplay and UpcomingShows components correctly match current weekday programs against the current day and time"
+      ]
+    }
+  ],
+  "constraints": [
+    "Do not modify files under frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, or frontend/src/components/ui",
+    "All backend logic must remain in the single actor in backend/main.mo"
+  ],
+  "nonGoals": [
+    "Adding weekend (Saturday/Sunday) program slots",
+    "Changing the overall Christmas-themed visual design",
+    "Modifying the Live365 stream player or NowPlaying integration"
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  }
+}

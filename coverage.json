@@ -1,0 +1,70 @@
+{
+  "kind": "coverage_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-24T20:39:02.432Z",
+  "sources": {
+    "buildRequest": true,
+    "implementationPlan": true
+  },
+  "requirements": {
+    "total": 3,
+    "implemented": 2,
+    "items": [
+      {
+        "id": "REQ-1",
+        "summary": "Update the backend Program data model and schedule storage to support weekday-specific program slots, allowing programs to be assigned to specific weekdays (Monday through Friday) with start time, end time, name, and description fields.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-2",
+        "summary": "Update the ManagePrograms admin page to allow admins to create, edit, and delete program slots specifically for weekdays (Monday–Friday). The add/edit dialog form must include a day-of-week selector field offering at minimum the five weekday options.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/admin/ManagePrograms.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/admin/ManagePrograms.tsx"
+        ]
+      },
+      {
+        "id": "REQ-3",
+        "summary": "Update the public SchedulePage to display program slots grouped or labeled by weekday (Monday through Friday), so listeners can browse what shows are scheduled on each day of the week.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/SchedulePage.tsx",
+          "frontend/src/components/OnAirDisplay.tsx",
+          "frontend/src/components/UpcomingShows.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/SchedulePage.tsx",
+          "frontend/src/components/OnAirDisplay.tsx",
+          "frontend/src/components/UpcomingShows.tsx"
+        ]
+      }
+    ]
+  },
+  "changedFiles": [
+    "backend/main.mo",
+    "backend/migration.mo",
+    "build-request.json",
+    "caffeine.lock.json",
+    "feature_evidence.json",
+    "frontend-file-summaries.txt",
+    "frontend-implementation-plan.json",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
+    "frontend/src/components/OnAirDisplay.tsx",
+    "frontend/src/components/UpcomingShows.tsx",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
+    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/pages/SchedulePage.tsx",
+    "frontend/src/pages/admin/ManagePrograms.tsx",
+    "project_state.json",
+    "scratch/component-selection.json",
+    "spec.md",
+    "spec_vs_diff_report.json"
+  ]
+}

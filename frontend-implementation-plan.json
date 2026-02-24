@@ -1,0 +1,50 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Add weekday program slots to Program Schedule",
+  "requirements": [
+    {
+      "id": "REQ-2",
+      "summary": "Update the ManagePrograms admin page to allow admins to create, edit, and delete program slots specifically for weekdays (Monday–Friday). The add/edit dialog form must include a day-of-week selector field offering at minimum the five weekday options.",
+      "acceptanceCriteria": [
+        "The add/edit program dialog includes a day selector with at least Monday, Tuesday, Wednesday, Thursday, and Friday as options",
+        "Saving a program with a weekday selection persists the correct day to the backend",
+        "Weekday programs appear in the program list with their associated day label"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/admin/ManagePrograms.tsx",
+          "operation": "modify",
+          "description": "Add a day-of-week selector field to the add/edit program dialog form. The selector should offer at minimum Monday, Tuesday, Wednesday, Thursday, and Friday as options. Update the form state to track the selected day. Modify the save handler to include the selected day when calling backend addCustomProgram or updateProgram methods. Update the program list display to show the associated day label for each program entry. Ensure the dialog handles both creating new programs with a day and editing existing programs where the day can be changed."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Update the public SchedulePage to display program slots grouped or labeled by weekday (Monday through Friday), so listeners can browse what shows are scheduled on each day of the week.",
+      "acceptanceCriteria": [
+        "The Schedule page shows program entries with their associated weekday clearly labeled",
+        "Programs are visually grouped or sorted by weekday (Mon–Fri)",
+        "If no programs are scheduled for a weekday, that day shows an appropriate empty state or is omitted",
+        "The OnAirDisplay and UpcomingShows components correctly match current weekday programs against the current day and time"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/SchedulePage.tsx",
+          "operation": "modify",
+          "description": "Restructure the schedule display to group or sort programs by weekday (Monday through Friday). Add clear weekday labels or headers for each day's programs. Implement logic to handle empty days gracefully (either show an empty state or omit the day entirely). Update the rendering logic to iterate through weekdays and display associated programs under each day heading. Ensure the visual layout clearly separates programs by day for easy listener navigation."
+        },
+        {
+          "path": "frontend/src/components/OnAirDisplay.tsx",
+          "operation": "modify",
+          "description": "Update the current program matching logic to correctly handle weekday-specific programs. Ensure the component retrieves the current day of the week and matches it against program day fields. Modify the time and day matching logic to work with the new weekday program format. Verify the component continues to support override functionality and handles edge cases like programs spanning multiple days or time ranges."
+        },
+        {
+          "path": "frontend/src/components/UpcomingShows.tsx",
+          "operation": "modify",
+          "description": "Update the upcoming shows calculation logic to correctly parse and match weekday-specific programs. Ensure the component retrieves the current day of the week and filters programs scheduled for upcoming days. Modify the time parsing and next-show calculation to work with weekday program slots. Verify the component correctly handles the transition between days and shows programs in chronological order across weekdays."
+        }
+      ]
+    }
+  ]
+}
