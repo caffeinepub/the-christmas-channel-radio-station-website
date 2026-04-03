@@ -1,14 +1,27 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useActor } from './useActor';
-import type { DJProfile, Program, NowPlaying, UserProfile, ThemeSettings, BackgroundImage, TailwindColor, SongRequest, LastUpdateResult, OnAirOverride, StationInformation } from '../backend';
-import { ExternalBlob } from '../backend';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type {
+  BackgroundImage,
+  BlogPost,
+  DJProfile,
+  LastUpdateResult,
+  NowPlaying,
+  OnAirOverride,
+  ProgramDaySlot,
+  SongRequest,
+  StationInformation,
+  TailwindColor,
+  ThemeSettings,
+  UserProfile,
+} from "../backend";
+import type { ExternalBlob } from "../backend";
+import { useActor } from "./useActor";
 
 // Query: Get all DJ profiles
 export function useGetDJProfiles() {
   const { actor, isFetching } = useActor();
 
   return useQuery<DJProfile[]>({
-    queryKey: ['djProfiles'],
+    queryKey: ["djProfiles"],
     queryFn: async () => {
       if (!actor) return [];
       return actor.getDJProfiles();
@@ -17,15 +30,23 @@ export function useGetDJProfiles() {
   });
 }
 
-// Query: Get program schedule
+// Query: Get program schedule - returns flattened ProgramDaySlot[]
 export function useGetProgramSchedule() {
   const { actor, isFetching } = useActor();
 
-  return useQuery<Program[]>({
-    queryKey: ['programSchedule'],
+  return useQuery<ProgramDaySlot[]>({
+    queryKey: ["programSchedule"],
     queryFn: async () => {
       if (!actor) return [];
-      return actor.getProgramSchedule();
+      const raw = await actor.getProgramSchedule();
+      // Flatten: Array<[name, ProgramDaySlot[]]> -> ProgramDaySlot[]
+      const slots: ProgramDaySlot[] = [];
+      for (const [, daySlots] of raw) {
+        for (const slot of daySlots) {
+          slots.push(slot);
+        }
+      }
+      return slots;
     },
     enabled: !!actor && !isFetching,
   });
@@ -36,13 +57,13 @@ export function useGetNowPlaying() {
   const { actor, isFetching } = useActor();
 
   return useQuery<NowPlaying | null>({
-    queryKey: ['nowPlaying'],
+    queryKey: ["nowPlaying"],
     queryFn: async () => {
       if (!actor) return null;
       return actor.getNowPlaying();
     },
     enabled: !!actor && !isFetching,
-    refetchInterval: 10000, // Refetch every 10 seconds for live updates
+    refetchInterval: 10000,
   });
 }
 
@@ -51,9 +72,9 @@ export function useGetThemeSettings() {
   const { actor, isFetching } = useActor();
 
   return useQuery<ThemeSettings>({
-    queryKey: ['themeSettings'],
+    queryKey: ["themeSettings"],
     queryFn: async () => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       return actor.getThemeSettings();
     },
     enabled: !!actor && !isFetching,
@@ -65,9 +86,9 @@ export function useGetCallerUserProfile() {
   const { actor, isFetching: actorFetching } = useActor();
 
   const query = useQuery<UserProfile | null>({
-    queryKey: ['currentUserProfile'],
+    queryKey: ["currentUserProfile"],
     queryFn: async () => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       return actor.getCallerUserProfile();
     },
     enabled: !!actor && !actorFetching,
@@ -86,7 +107,7 @@ export function useIsCallerAdmin() {
   const { actor, isFetching } = useActor();
 
   return useQuery<boolean>({
-    queryKey: ['isAdmin'],
+    queryKey: ["isAdmin"],
     queryFn: async () => {
       if (!actor) return false;
       return actor.isCallerAdmin();
@@ -100,13 +121,13 @@ export function useGetSongRequests() {
   const { actor, isFetching } = useActor();
 
   return useQuery<SongRequest[]>({
-    queryKey: ['songRequests'],
+    queryKey: ["songRequests"],
     queryFn: async () => {
       if (!actor) return [];
       return actor.getSongRequests();
     },
     enabled: !!actor && !isFetching,
-    refetchInterval: 30000, // Refetch every 30 seconds for real-time updates
+    refetchInterval: 30000,
   });
 }
 
@@ -115,7 +136,7 @@ export function useGetLastUpdateResult() {
   const { actor, isFetching } = useActor();
 
   return useQuery<LastUpdateResult | null>({
-    queryKey: ['lastUpdateResult'],
+    queryKey: ["lastUpdateResult"],
     queryFn: async () => {
       if (!actor) return null;
       return actor.getLastUpdateResult();
@@ -129,13 +150,13 @@ export function useGetOnAirOverride() {
   const { actor, isFetching } = useActor();
 
   return useQuery<OnAirOverride | null>({
-    queryKey: ['onAirOverride'],
+    queryKey: ["onAirOverride"],
     queryFn: async () => {
       if (!actor) return null;
       return actor.getOnAirOverride();
     },
     enabled: !!actor && !isFetching,
-    refetchInterval: 10000, // Refetch every 10 seconds for live updates
+    refetchInterval: 10000,
   });
 }
 
@@ -144,10 +165,38 @@ export function useGetStationInformation() {
   const { actor, isFetching } = useActor();
 
   return useQuery<StationInformation | null>({
-    queryKey: ['stationInformation'],
+    queryKey: ["stationInformation"],
     queryFn: async () => {
       if (!actor) return null;
       return actor.getStationInformation();
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+// Query: Get published blog posts (public)
+export function useGetBlogPosts() {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<BlogPost[]>({
+    queryKey: ["blogPosts"],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.getBlogPosts();
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+// Query: Get all blog posts including drafts (admin only)
+export function useGetAllBlogPosts() {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<BlogPost[]>({
+    queryKey: ["allBlogPosts"],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.getAllBlogPosts();
     },
     enabled: !!actor && !isFetching,
   });
@@ -160,11 +209,11 @@ export function useSaveCallerUserProfile() {
 
   return useMutation({
     mutationFn: async (profile: UserProfile) => {
-      if (!actor) throw new Error('Actor not initialized');
+      if (!actor) throw new Error("Actor not initialized");
       return actor.saveCallerUserProfile(profile);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['currentUserProfile'] });
+      queryClient.invalidateQueries({ queryKey: ["currentUserProfile"] });
     },
   });
 }
@@ -175,7 +224,7 @@ export function useSubmitSongRequest() {
 
   return useMutation({
     mutationFn: async (songRequest: SongRequest) => {
-      if (!actor) throw new Error('Actor not initialized');
+      if (!actor) throw new Error("Actor not initialized");
       return actor.submitSongRequest(songRequest);
     },
   });
@@ -188,11 +237,11 @@ export function useClearSongRequests() {
 
   return useMutation({
     mutationFn: async () => {
-      if (!actor) throw new Error('Actor not initialized');
+      if (!actor) throw new Error("Actor not initialized");
       return actor.clearSongRequests();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['songRequests'] });
+      queryClient.invalidateQueries({ queryKey: ["songRequests"] });
     },
   });
 }
@@ -203,12 +252,15 @@ export function useUpdateNowPlaying() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ title, artist }: { title: string; artist: string }) => {
-      if (!actor) throw new Error('Actor not initialized');
+    mutationFn: async ({
+      title,
+      artist,
+    }: { title: string; artist: string }) => {
+      if (!actor) throw new Error("Actor not initialized");
       return actor.updateNowPlaying(title, artist);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['nowPlaying'] });
+      queryClient.invalidateQueries({ queryKey: ["nowPlaying"] });
     },
   });
 }
@@ -220,11 +272,11 @@ export function useClearNowPlaying() {
 
   return useMutation({
     mutationFn: async () => {
-      if (!actor) throw new Error('Actor not initialized');
+      if (!actor) throw new Error("Actor not initialized");
       return actor.clearNowPlaying();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['nowPlaying'] });
+      queryClient.invalidateQueries({ queryKey: ["nowPlaying"] });
     },
   });
 }
@@ -237,22 +289,31 @@ export function useUpdateThemeSettings() {
   return useMutation({
     mutationFn: async ({
       showCountdown,
+      showNewsFeed,
       snowEnabled,
       backgroundImage,
       primaryColor,
       accentColor,
     }: {
       showCountdown: boolean;
+      showNewsFeed: boolean;
       snowEnabled: boolean;
       backgroundImage: BackgroundImage;
       primaryColor: TailwindColor;
       accentColor: TailwindColor;
     }) => {
-      if (!actor) throw new Error('Actor not initialized');
-      return actor.updateThemeSettings(showCountdown, snowEnabled, backgroundImage, primaryColor, accentColor);
+      if (!actor) throw new Error("Actor not initialized");
+      return actor.updateThemeSettings(
+        showCountdown,
+        showNewsFeed,
+        snowEnabled,
+        backgroundImage,
+        primaryColor,
+        accentColor,
+      );
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['themeSettings'] });
+      queryClient.invalidateQueries({ queryKey: ["themeSettings"] });
     },
   });
 }
@@ -263,12 +324,16 @@ export function useAddDJProfile() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ name, bio, photo }: { name: string; bio: string; photo: ExternalBlob }) => {
-      if (!actor) throw new Error('Actor not initialized');
+    mutationFn: async ({
+      name,
+      bio,
+      photo,
+    }: { name: string; bio: string; photo: ExternalBlob }) => {
+      if (!actor) throw new Error("Actor not initialized");
       return actor.addDJProfile(name, bio, photo);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['djProfiles'] });
+      queryClient.invalidateQueries({ queryKey: ["djProfiles"] });
     },
   });
 }
@@ -279,12 +344,16 @@ export function useUpdateDJProfile() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ name, bio, photo }: { name: string; bio: string; photo: ExternalBlob }) => {
-      if (!actor) throw new Error('Actor not initialized');
+    mutationFn: async ({
+      name,
+      bio,
+      photo,
+    }: { name: string; bio: string; photo: ExternalBlob }) => {
+      if (!actor) throw new Error("Actor not initialized");
       return actor.updateDJProfile(name, bio, photo);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['djProfiles'] });
+      queryClient.invalidateQueries({ queryKey: ["djProfiles"] });
     },
   });
 }
@@ -296,59 +365,104 @@ export function useDeleteDJProfile() {
 
   return useMutation({
     mutationFn: async (name: string) => {
-      if (!actor) throw new Error('Actor not initialized');
+      if (!actor) throw new Error("Actor not initialized");
       return actor.deleteDJProfile(name);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['djProfiles'] });
+      queryClient.invalidateQueries({ queryKey: ["djProfiles"] });
     },
   });
 }
 
-// Mutation: Add custom program
+// Mutation: Add custom program (with days array and bio)
 export function useAddCustomProgram() {
   const { actor } = useActor();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ name, description, startTime, endTime }: { name: string; description: string; startTime: string; endTime: string }) => {
-      if (!actor) throw new Error('Actor not initialized');
-      return actor.addCustomProgram(name, description, startTime, endTime);
+    mutationFn: async ({
+      name,
+      description,
+      bio,
+      startTime,
+      endTime,
+      days,
+    }: {
+      name: string;
+      description: string;
+      bio: string;
+      startTime: string;
+      endTime: string;
+      days: string[];
+    }) => {
+      if (!actor) throw new Error("Actor not initialized");
+      return actor.addCustomProgram(
+        name,
+        description,
+        bio,
+        startTime,
+        endTime,
+        days,
+      );
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['programSchedule'] });
+      queryClient.invalidateQueries({ queryKey: ["programSchedule"] });
     },
   });
 }
 
-// Mutation: Update program
+// Mutation: Update program (with oldDay/newDay and bio)
 export function useUpdateProgram() {
   const { actor } = useActor();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ name, description, startTime, endTime }: { name: string; description: string; startTime: string; endTime: string }) => {
-      if (!actor) throw new Error('Actor not initialized');
-      return actor.updateProgram(name, description, startTime, endTime);
+    mutationFn: async ({
+      name,
+      description,
+      bio,
+      startTime,
+      endTime,
+      oldDay,
+      newDay,
+    }: {
+      name: string;
+      description: string;
+      bio: string;
+      startTime: string;
+      endTime: string;
+      oldDay: string;
+      newDay: string;
+    }) => {
+      if (!actor) throw new Error("Actor not initialized");
+      return actor.updateProgram(
+        name,
+        description,
+        bio,
+        startTime,
+        endTime,
+        oldDay,
+        newDay,
+      );
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['programSchedule'] });
+      queryClient.invalidateQueries({ queryKey: ["programSchedule"] });
     },
   });
 }
 
-// Mutation: Delete program
+// Mutation: Delete program (by name and day)
 export function useDeleteProgram() {
   const { actor } = useActor();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (name: string) => {
-      if (!actor) throw new Error('Actor not initialized');
-      return actor.deleteProgram(name);
+    mutationFn: async ({ name, day }: { name: string; day: string }) => {
+      if (!actor) throw new Error("Actor not initialized");
+      return actor.deleteProgram(name, day);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['programSchedule'] });
+      queryClient.invalidateQueries({ queryKey: ["programSchedule"] });
     },
   });
 }
@@ -360,17 +474,16 @@ export function useRunManualUpdate() {
 
   return useMutation({
     mutationFn: async (files: string[]) => {
-      if (!actor) throw new Error('Actor not initialized');
+      if (!actor) throw new Error("Actor not initialized");
       return actor.runManualUpdate(files);
     },
     onSuccess: () => {
-      // Invalidate all relevant queries to refresh data
-      queryClient.invalidateQueries({ queryKey: ['djProfiles'] });
-      queryClient.invalidateQueries({ queryKey: ['programSchedule'] });
-      queryClient.invalidateQueries({ queryKey: ['nowPlaying'] });
-      queryClient.invalidateQueries({ queryKey: ['songRequests'] });
-      queryClient.invalidateQueries({ queryKey: ['themeSettings'] });
-      queryClient.invalidateQueries({ queryKey: ['lastUpdateResult'] });
+      queryClient.invalidateQueries({ queryKey: ["djProfiles"] });
+      queryClient.invalidateQueries({ queryKey: ["programSchedule"] });
+      queryClient.invalidateQueries({ queryKey: ["nowPlaying"] });
+      queryClient.invalidateQueries({ queryKey: ["songRequests"] });
+      queryClient.invalidateQueries({ queryKey: ["themeSettings"] });
+      queryClient.invalidateQueries({ queryKey: ["lastUpdateResult"] });
     },
   });
 }
@@ -382,11 +495,11 @@ export function useSetOnAirOverride() {
 
   return useMutation({
     mutationFn: async (override: OnAirOverride) => {
-      if (!actor) throw new Error('Actor not initialized');
+      if (!actor) throw new Error("Actor not initialized");
       return actor.setOnAirOverride(override);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['onAirOverride'] });
+      queryClient.invalidateQueries({ queryKey: ["onAirOverride"] });
     },
   });
 }
@@ -398,11 +511,11 @@ export function useClearOnAirOverride() {
 
   return useMutation({
     mutationFn: async () => {
-      if (!actor) throw new Error('Actor not initialized');
+      if (!actor) throw new Error("Actor not initialized");
       return actor.clearOnAirOverride();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['onAirOverride'] });
+      queryClient.invalidateQueries({ queryKey: ["onAirOverride"] });
     },
   });
 }
@@ -414,11 +527,105 @@ export function useUpdateStationInformation() {
 
   return useMutation({
     mutationFn: async (stationInfo: StationInformation) => {
-      if (!actor) throw new Error('Actor not initialized');
+      if (!actor) throw new Error("Actor not initialized");
       return actor.updateStationInformation(stationInfo);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['stationInformation'] });
+      queryClient.invalidateQueries({ queryKey: ["stationInformation"] });
+    },
+  });
+}
+
+// Mutation: Create blog post (admin only)
+export function useCreateBlogPost() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      title,
+      content,
+      author,
+    }: { title: string; content: string; author: string }) => {
+      if (!actor) throw new Error("Actor not initialized");
+      return actor.createBlogPost(title, content, author);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["allBlogPosts"] });
+      queryClient.invalidateQueries({ queryKey: ["blogPosts"] });
+    },
+  });
+}
+
+// Mutation: Update blog post (admin only)
+export function useUpdateBlogPost() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      id,
+      title,
+      content,
+      author,
+    }: { id: string; title: string; content: string; author: string }) => {
+      if (!actor) throw new Error("Actor not initialized");
+      return actor.updateBlogPost(id, title, content, author);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["allBlogPosts"] });
+      queryClient.invalidateQueries({ queryKey: ["blogPosts"] });
+    },
+  });
+}
+
+// Mutation: Delete blog post (admin only)
+export function useDeleteBlogPost() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      if (!actor) throw new Error("Actor not initialized");
+      return actor.deleteBlogPost(id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["allBlogPosts"] });
+      queryClient.invalidateQueries({ queryKey: ["blogPosts"] });
+    },
+  });
+}
+
+// Mutation: Publish blog post (admin only)
+export function usePublishBlogPost() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      if (!actor) throw new Error("Actor not initialized");
+      return actor.publishBlogPost(id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["allBlogPosts"] });
+      queryClient.invalidateQueries({ queryKey: ["blogPosts"] });
+    },
+  });
+}
+
+// Mutation: Unpublish blog post (admin only)
+export function useUnpublishBlogPost() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      if (!actor) throw new Error("Actor not initialized");
+      return actor.unpublishBlogPost(id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["allBlogPosts"] });
+      queryClient.invalidateQueries({ queryKey: ["blogPosts"] });
     },
   });
 }

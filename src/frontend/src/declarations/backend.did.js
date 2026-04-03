@@ -48,10 +48,15 @@ export const OnAirOverride = IDL.Record({
   'description' : IDL.Text,
 });
 export const Program = IDL.Record({
+  'bio' : IDL.Text,
   'startTime' : IDL.Text,
   'endTime' : IDL.Text,
   'name' : IDL.Text,
   'description' : IDL.Text,
+});
+export const ProgramDaySlot = IDL.Record({
+  'day' : IDL.Text,
+  'program' : Program,
 });
 export const SongRequest = IDL.Record({
   'songTitle' : IDL.Text,
@@ -69,15 +74,19 @@ export const TailwindColor = IDL.Variant({
   'gold' : IDL.Null,
   'purple' : IDL.Null,
   'green' : IDL.Null,
+  'silver' : IDL.Null,
   'brown' : IDL.Null,
   'white' : IDL.Null,
 });
 export const BackgroundImage = IDL.Variant({
+  'christmasLights' : IDL.Null,
   'festiveTree' : IDL.Null,
+  'holidayDecorations' : IDL.Null,
   'twinklingLights' : IDL.Null,
   'snowyVillage' : IDL.Null,
 });
 export const ThemeSettings = IDL.Record({
+  'showNewsFeed' : IDL.Bool,
   'primaryColor' : TailwindColor,
   'showCountdown' : IDL.Bool,
   'accentColor' : TailwindColor,
@@ -122,7 +131,7 @@ export const idlService = IDL.Service({
   '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
   'addCustomProgram' : IDL.Func(
-      [IDL.Text, IDL.Text, IDL.Text, IDL.Text],
+      [IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Vec(IDL.Text)],
       [],
       [],
     ),
@@ -132,14 +141,19 @@ export const idlService = IDL.Service({
   'clearOnAirOverride' : IDL.Func([], [], []),
   'clearSongRequests' : IDL.Func([], [], []),
   'deleteDJProfile' : IDL.Func([IDL.Text], [], []),
-  'deleteProgram' : IDL.Func([IDL.Text], [], []),
+  'deleteProgram' : IDL.Func([IDL.Text, IDL.Text], [], []),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
   'getDJProfiles' : IDL.Func([], [IDL.Vec(DJProfile)], ['query']),
   'getLastUpdateResult' : IDL.Func([], [IDL.Opt(LastUpdateResult)], ['query']),
   'getNowPlaying' : IDL.Func([], [IDL.Opt(NowPlaying)], ['query']),
   'getOnAirOverride' : IDL.Func([], [IDL.Opt(OnAirOverride)], ['query']),
-  'getProgramSchedule' : IDL.Func([], [IDL.Vec(Program)], ['query']),
+  'getProgramSchedule' : IDL.Func(
+      [],
+      [IDL.Vec(IDL.Tuple(IDL.Text, IDL.Vec(ProgramDaySlot)))],
+      ['query'],
+    ),
+  'getProgramsForDay' : IDL.Func([IDL.Text], [IDL.Vec(Program)], ['query']),
   'getSongRequests' : IDL.Func([], [IDL.Vec(SongRequest)], []),
   'getStationInformation' : IDL.Func(
       [],
@@ -162,10 +176,21 @@ export const idlService = IDL.Service({
   'submitSongRequest' : IDL.Func([SongRequest], [], []),
   'updateDJProfile' : IDL.Func([IDL.Text, IDL.Text, ExternalBlob], [], []),
   'updateNowPlaying' : IDL.Func([IDL.Text, IDL.Text], [], []),
-  'updateProgram' : IDL.Func([IDL.Text, IDL.Text, IDL.Text, IDL.Text], [], []),
+  'updateProgram' : IDL.Func(
+      [IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text],
+      [],
+      [],
+    ),
   'updateStationInformation' : IDL.Func([StationInformation], [], []),
   'updateThemeSettings' : IDL.Func(
-      [IDL.Bool, IDL.Bool, BackgroundImage, TailwindColor, TailwindColor],
+      [
+        IDL.Bool,
+        IDL.Bool,
+        IDL.Bool,
+        BackgroundImage,
+        TailwindColor,
+        TailwindColor,
+      ],
       [],
       [],
     ),
@@ -212,11 +237,13 @@ export const idlFactory = ({ IDL }) => {
     'description' : IDL.Text,
   });
   const Program = IDL.Record({
+    'bio' : IDL.Text,
     'startTime' : IDL.Text,
     'endTime' : IDL.Text,
     'name' : IDL.Text,
     'description' : IDL.Text,
   });
+  const ProgramDaySlot = IDL.Record({ 'day' : IDL.Text, 'program' : Program });
   const SongRequest = IDL.Record({
     'songTitle' : IDL.Text,
     'name' : IDL.Text,
@@ -233,15 +260,19 @@ export const idlFactory = ({ IDL }) => {
     'gold' : IDL.Null,
     'purple' : IDL.Null,
     'green' : IDL.Null,
+    'silver' : IDL.Null,
     'brown' : IDL.Null,
     'white' : IDL.Null,
   });
   const BackgroundImage = IDL.Variant({
+    'christmasLights' : IDL.Null,
     'festiveTree' : IDL.Null,
+    'holidayDecorations' : IDL.Null,
     'twinklingLights' : IDL.Null,
     'snowyVillage' : IDL.Null,
   });
   const ThemeSettings = IDL.Record({
+    'showNewsFeed' : IDL.Bool,
     'primaryColor' : TailwindColor,
     'showCountdown' : IDL.Bool,
     'accentColor' : TailwindColor,
@@ -286,7 +317,7 @@ export const idlFactory = ({ IDL }) => {
     '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
     'addCustomProgram' : IDL.Func(
-        [IDL.Text, IDL.Text, IDL.Text, IDL.Text],
+        [IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Vec(IDL.Text)],
         [],
         [],
       ),
@@ -296,7 +327,7 @@ export const idlFactory = ({ IDL }) => {
     'clearOnAirOverride' : IDL.Func([], [], []),
     'clearSongRequests' : IDL.Func([], [], []),
     'deleteDJProfile' : IDL.Func([IDL.Text], [], []),
-    'deleteProgram' : IDL.Func([IDL.Text], [], []),
+    'deleteProgram' : IDL.Func([IDL.Text, IDL.Text], [], []),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
     'getDJProfiles' : IDL.Func([], [IDL.Vec(DJProfile)], ['query']),
@@ -307,7 +338,12 @@ export const idlFactory = ({ IDL }) => {
       ),
     'getNowPlaying' : IDL.Func([], [IDL.Opt(NowPlaying)], ['query']),
     'getOnAirOverride' : IDL.Func([], [IDL.Opt(OnAirOverride)], ['query']),
-    'getProgramSchedule' : IDL.Func([], [IDL.Vec(Program)], ['query']),
+    'getProgramSchedule' : IDL.Func(
+        [],
+        [IDL.Vec(IDL.Tuple(IDL.Text, IDL.Vec(ProgramDaySlot)))],
+        ['query'],
+      ),
+    'getProgramsForDay' : IDL.Func([IDL.Text], [IDL.Vec(Program)], ['query']),
     'getSongRequests' : IDL.Func([], [IDL.Vec(SongRequest)], []),
     'getStationInformation' : IDL.Func(
         [],
@@ -331,13 +367,20 @@ export const idlFactory = ({ IDL }) => {
     'updateDJProfile' : IDL.Func([IDL.Text, IDL.Text, ExternalBlob], [], []),
     'updateNowPlaying' : IDL.Func([IDL.Text, IDL.Text], [], []),
     'updateProgram' : IDL.Func(
-        [IDL.Text, IDL.Text, IDL.Text, IDL.Text],
+        [IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text],
         [],
         [],
       ),
     'updateStationInformation' : IDL.Func([StationInformation], [], []),
     'updateThemeSettings' : IDL.Func(
-        [IDL.Bool, IDL.Bool, BackgroundImage, TailwindColor, TailwindColor],
+        [
+          IDL.Bool,
+          IDL.Bool,
+          IDL.Bool,
+          BackgroundImage,
+          TailwindColor,
+          TailwindColor,
+        ],
         [],
         [],
       ),

@@ -1,15 +1,24 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from '@tanstack/react-router';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Eye, Save, Palette } from 'lucide-react';
-import { toast } from 'sonner';
-import ProtectedRoute from '../../components/ProtectedRoute';
-import { useGetThemeSettings, useUpdateThemeSettings } from '../../hooks/useQueries';
-import { BackgroundImage, TailwindColor } from '../../backend';
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { useNavigate } from "@tanstack/react-router";
+import { ArrowLeft, Eye, Palette, Save } from "lucide-react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { BackgroundImage, TailwindColor } from "../../backend";
+import ProtectedRoute from "../../components/ProtectedRoute";
+import {
+  useGetThemeSettings,
+  useUpdateThemeSettings,
+} from "../../hooks/useQueries";
 
 export default function ManageThemeSettings() {
   const navigate = useNavigate();
@@ -17,15 +26,23 @@ export default function ManageThemeSettings() {
   const updateThemeSettings = useUpdateThemeSettings();
 
   const [showCountdown, setShowCountdown] = useState(true);
+  const [showNewsFeed, setShowNewsFeed] = useState(true);
   const [snowEnabled, setSnowEnabled] = useState(true);
-  const [backgroundImage, setBackgroundImage] = useState<BackgroundImage>(BackgroundImage.snowyVillage);
-  const [primaryColor, setPrimaryColor] = useState<TailwindColor>(TailwindColor.red);
-  const [accentColor, setAccentColor] = useState<TailwindColor>(TailwindColor.gold);
+  const [backgroundImage, setBackgroundImage] = useState<BackgroundImage>(
+    BackgroundImage.snowyVillage,
+  );
+  const [primaryColor, setPrimaryColor] = useState<TailwindColor>(
+    TailwindColor.red,
+  );
+  const [accentColor, setAccentColor] = useState<TailwindColor>(
+    TailwindColor.gold,
+  );
   const [isPreview, setIsPreview] = useState(false);
 
   useEffect(() => {
     if (themeSettings) {
       setShowCountdown(themeSettings.showCountdown);
+      setShowNewsFeed(themeSettings.showNewsFeed);
       setSnowEnabled(themeSettings.snowEnabled);
       setBackgroundImage(themeSettings.backgroundImage);
       setPrimaryColor(themeSettings.primaryColor);
@@ -37,38 +54,67 @@ export default function ManageThemeSettings() {
     try {
       await updateThemeSettings.mutateAsync({
         showCountdown,
+        showNewsFeed,
         snowEnabled,
         backgroundImage,
         primaryColor,
         accentColor,
       });
-      toast.success('Theme settings saved successfully!');
+      toast.success("Theme settings saved successfully!");
       setIsPreview(false);
     } catch (error) {
-      console.error('Error saving theme settings:', error);
-      toast.error('Failed to save theme settings');
+      console.error("Error saving theme settings:", error);
+      toast.error("Failed to save theme settings");
     }
   };
 
   const handlePreview = () => {
     setIsPreview(true);
-    toast.info('Preview mode enabled. Changes are not saved yet.');
+    toast.info("Preview mode enabled. Changes are not saved yet.");
   };
 
   const backgroundImageOptions = [
-    { value: BackgroundImage.snowyVillage, label: 'Snowy Village', image: '/assets/generated/snowy-village-background.dim_1920x1080.jpg' },
-    { value: BackgroundImage.twinklingLights, label: 'Twinkling Lights', image: '/assets/generated/twinkling-lights-background.dim_1920x1080.jpg' },
-    { value: BackgroundImage.festiveTree, label: 'Festive Tree', image: '/assets/generated/festive-tree-background.dim_1920x1080.jpg' },
+    {
+      value: BackgroundImage.snowyVillage,
+      label: "Snowy Village",
+      image: "/assets/generated/snowy-village-background.dim_1920x1080.jpg",
+    },
+    {
+      value: BackgroundImage.twinklingLights,
+      label: "Twinkling Lights",
+      image: "/assets/generated/twinkling-lights-background.dim_1920x1080.jpg",
+    },
+    {
+      value: BackgroundImage.festiveTree,
+      label: "Festive Tree",
+      image: "/assets/generated/festive-tree-background.dim_1920x1080.jpg",
+    },
   ];
 
   const colorOptions = [
-    { value: TailwindColor.red, label: 'Red', color: 'oklch(0.52 0.22 25)' },
-    { value: TailwindColor.green, label: 'Green', color: 'oklch(0.48 0.18 155)' },
-    { value: TailwindColor.gold, label: 'Gold', color: 'oklch(0.78 0.15 85)' },
-    { value: TailwindColor.blue, label: 'Blue', color: 'oklch(0.55 0.20 250)' },
-    { value: TailwindColor.purple, label: 'Purple', color: 'oklch(0.55 0.20 300)' },
-    { value: TailwindColor.brown, label: 'Brown', color: 'oklch(0.45 0.10 50)' },
-    { value: TailwindColor.white, label: 'White', color: 'oklch(0.95 0.02 85)' },
+    { value: TailwindColor.red, label: "Red", color: "oklch(0.52 0.22 25)" },
+    {
+      value: TailwindColor.green,
+      label: "Green",
+      color: "oklch(0.48 0.18 155)",
+    },
+    { value: TailwindColor.gold, label: "Gold", color: "oklch(0.78 0.15 85)" },
+    { value: TailwindColor.blue, label: "Blue", color: "oklch(0.55 0.20 250)" },
+    {
+      value: TailwindColor.purple,
+      label: "Purple",
+      color: "oklch(0.55 0.20 300)",
+    },
+    {
+      value: TailwindColor.brown,
+      label: "Brown",
+      color: "oklch(0.45 0.10 50)",
+    },
+    {
+      value: TailwindColor.white,
+      label: "White",
+      color: "oklch(0.95 0.02 85)",
+    },
   ];
 
   if (isLoading) {
@@ -88,7 +134,7 @@ export default function ManageThemeSettings() {
           <div>
             <Button
               variant="ghost"
-              onClick={() => navigate({ to: '/admin' })}
+              onClick={() => navigate({ to: "/admin" })}
               className="mb-4 text-christmas-red hover:text-christmas-red-dark"
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
@@ -116,7 +162,10 @@ export default function ManageThemeSettings() {
                 {/* Snow Effects Toggle */}
                 <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                   <div>
-                    <Label htmlFor="snow-toggle" className="text-base font-semibold text-christmas-dark">
+                    <Label
+                      htmlFor="snow-toggle"
+                      className="text-base font-semibold text-christmas-dark"
+                    >
                       Snow Effects
                     </Label>
                     <p className="text-sm text-gray-600 mt-1">
@@ -133,7 +182,10 @@ export default function ManageThemeSettings() {
                 {/* Christmas Countdown Toggle */}
                 <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                   <div>
-                    <Label htmlFor="countdown-toggle" className="text-base font-semibold text-christmas-dark">
+                    <Label
+                      htmlFor="countdown-toggle"
+                      className="text-base font-semibold text-christmas-dark"
+                    >
                       Christmas Countdown
                     </Label>
                     <p className="text-sm text-gray-600 mt-1">
@@ -147,6 +199,26 @@ export default function ManageThemeSettings() {
                   />
                 </div>
 
+                {/* News Feed Toggle */}
+                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  <div>
+                    <Label
+                      htmlFor="newsfeed-toggle"
+                      className="text-base font-semibold text-christmas-dark"
+                    >
+                      News Feed
+                    </Label>
+                    <p className="text-sm text-gray-600 mt-1">
+                      Show news feed on homepage
+                    </p>
+                  </div>
+                  <Switch
+                    id="newsfeed-toggle"
+                    checked={showNewsFeed}
+                    onCheckedChange={setShowNewsFeed}
+                  />
+                </div>
+
                 {/* Background Image Selection */}
                 <div className="p-4 bg-gray-50 rounded-lg">
                   <Label className="text-base font-semibold text-christmas-dark mb-3 block">
@@ -154,7 +226,9 @@ export default function ManageThemeSettings() {
                   </Label>
                   <Select
                     value={backgroundImage}
-                    onValueChange={(value) => setBackgroundImage(value as BackgroundImage)}
+                    onValueChange={(value) =>
+                      setBackgroundImage(value as BackgroundImage)
+                    }
                   >
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select background" />
@@ -170,12 +244,13 @@ export default function ManageThemeSettings() {
                   <div className="mt-3 grid grid-cols-3 gap-2">
                     {backgroundImageOptions.map((option) => (
                       <button
+                        type="button"
                         key={option.value}
                         onClick={() => setBackgroundImage(option.value)}
                         className={`relative rounded-lg overflow-hidden border-2 transition-all ${
                           backgroundImage === option.value
-                            ? 'border-christmas-gold ring-2 ring-christmas-gold'
-                            : 'border-gray-300 hover:border-christmas-gold'
+                            ? "border-christmas-gold ring-2 ring-christmas-gold"
+                            : "border-gray-300 hover:border-christmas-gold"
                         }`}
                       >
                         <img
@@ -184,7 +259,9 @@ export default function ManageThemeSettings() {
                           className="w-full h-20 object-cover"
                         />
                         <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
-                          <span className="text-white text-xs font-semibold">{option.label}</span>
+                          <span className="text-white text-xs font-semibold">
+                            {option.label}
+                          </span>
                         </div>
                       </button>
                     ))}
@@ -198,7 +275,9 @@ export default function ManageThemeSettings() {
                   </Label>
                   <Select
                     value={primaryColor}
-                    onValueChange={(value) => setPrimaryColor(value as TailwindColor)}
+                    onValueChange={(value) =>
+                      setPrimaryColor(value as TailwindColor)
+                    }
                   >
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select primary color" />
@@ -220,12 +299,13 @@ export default function ManageThemeSettings() {
                   <div className="mt-3 flex gap-2">
                     {colorOptions.map((option) => (
                       <button
+                        type="button"
                         key={option.value}
                         onClick={() => setPrimaryColor(option.value)}
                         className={`w-10 h-10 rounded-full border-2 transition-all ${
                           primaryColor === option.value
-                            ? 'border-christmas-dark ring-2 ring-christmas-gold'
-                            : 'border-gray-300 hover:border-christmas-gold'
+                            ? "border-christmas-dark ring-2 ring-christmas-gold"
+                            : "border-gray-300 hover:border-christmas-gold"
                         }`}
                         style={{ backgroundColor: option.color }}
                         title={option.label}
@@ -241,7 +321,9 @@ export default function ManageThemeSettings() {
                   </Label>
                   <Select
                     value={accentColor}
-                    onValueChange={(value) => setAccentColor(value as TailwindColor)}
+                    onValueChange={(value) =>
+                      setAccentColor(value as TailwindColor)
+                    }
                   >
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select accent color" />
@@ -263,12 +345,13 @@ export default function ManageThemeSettings() {
                   <div className="mt-3 flex gap-2">
                     {colorOptions.map((option) => (
                       <button
+                        type="button"
                         key={option.value}
                         onClick={() => setAccentColor(option.value)}
                         className={`w-10 h-10 rounded-full border-2 transition-all ${
                           accentColor === option.value
-                            ? 'border-christmas-dark ring-2 ring-christmas-gold'
-                            : 'border-gray-300 hover:border-christmas-gold'
+                            ? "border-christmas-dark ring-2 ring-christmas-gold"
+                            : "border-gray-300 hover:border-christmas-gold"
                         }`}
                         style={{ backgroundColor: option.color }}
                         title={option.label}
@@ -294,7 +377,7 @@ export default function ManageThemeSettings() {
                   className="flex-1 bg-christmas-red hover:bg-christmas-red-dark"
                 >
                   <Save className="mr-2 h-4 w-4" />
-                  {updateThemeSettings.isPending ? 'Saving...' : 'Save Changes'}
+                  {updateThemeSettings.isPending ? "Saving..." : "Save Changes"}
                 </Button>
               </div>
             </div>
@@ -311,7 +394,8 @@ export default function ManageThemeSettings() {
               <div className="space-y-4">
                 {isPreview && (
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-800">
-                    <strong>Preview Mode:</strong> Changes shown below are not saved yet. Click "Save Changes" to apply.
+                    <strong>Preview Mode:</strong> Changes shown below are not
+                    saved yet. Click "Save Changes" to apply.
                   </div>
                 )}
 
@@ -320,31 +404,59 @@ export default function ManageThemeSettings() {
                   <div
                     className="h-48 relative"
                     style={{
-                      backgroundImage: `url(${backgroundImageOptions.find(opt => opt.value === backgroundImage)?.image})`,
-                      backgroundSize: 'cover',
-                      backgroundPosition: 'center',
+                      backgroundImage: `url(${backgroundImageOptions.find((opt) => opt.value === backgroundImage)?.image})`,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
                     }}
                   >
                     <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-black/50 flex items-center justify-center">
-                      <p className="text-white font-bold text-lg">Background Preview</p>
+                      <p className="text-white font-bold text-lg">
+                        Background Preview
+                      </p>
                     </div>
                   </div>
                 </div>
 
                 {/* Preview Colors */}
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="p-4 rounded-lg border-2" style={{ borderColor: colorOptions.find(opt => opt.value === primaryColor)?.color }}>
-                    <p className="text-sm font-semibold text-gray-700 mb-2">Primary Color</p>
+                  <div
+                    className="p-4 rounded-lg border-2"
+                    style={{
+                      borderColor: colorOptions.find(
+                        (opt) => opt.value === primaryColor,
+                      )?.color,
+                    }}
+                  >
+                    <p className="text-sm font-semibold text-gray-700 mb-2">
+                      Primary Color
+                    </p>
                     <div
                       className="h-16 rounded-lg"
-                      style={{ backgroundColor: colorOptions.find(opt => opt.value === primaryColor)?.color }}
+                      style={{
+                        backgroundColor: colorOptions.find(
+                          (opt) => opt.value === primaryColor,
+                        )?.color,
+                      }}
                     />
                   </div>
-                  <div className="p-4 rounded-lg border-2" style={{ borderColor: colorOptions.find(opt => opt.value === accentColor)?.color }}>
-                    <p className="text-sm font-semibold text-gray-700 mb-2">Accent Color</p>
+                  <div
+                    className="p-4 rounded-lg border-2"
+                    style={{
+                      borderColor: colorOptions.find(
+                        (opt) => opt.value === accentColor,
+                      )?.color,
+                    }}
+                  >
+                    <p className="text-sm font-semibold text-gray-700 mb-2">
+                      Accent Color
+                    </p>
                     <div
                       className="h-16 rounded-lg"
-                      style={{ backgroundColor: colorOptions.find(opt => opt.value === accentColor)?.color }}
+                      style={{
+                        backgroundColor: colorOptions.find(
+                          (opt) => opt.value === accentColor,
+                        )?.color,
+                      }}
                     />
                   </div>
                 </div>
@@ -352,15 +464,33 @@ export default function ManageThemeSettings() {
                 {/* Preview Features */}
                 <div className="space-y-3">
                   <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <span className="text-sm font-medium text-gray-700">Snow Effects</span>
-                    <span className={`text-sm font-semibold ${snowEnabled ? 'text-green-600' : 'text-gray-400'}`}>
-                      {snowEnabled ? '✓ Enabled' : '✗ Disabled'}
+                    <span className="text-sm font-medium text-gray-700">
+                      Snow Effects
+                    </span>
+                    <span
+                      className={`text-sm font-semibold ${snowEnabled ? "text-green-600" : "text-gray-400"}`}
+                    >
+                      {snowEnabled ? "✓ Enabled" : "✗ Disabled"}
                     </span>
                   </div>
                   <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <span className="text-sm font-medium text-gray-700">Christmas Countdown</span>
-                    <span className={`text-sm font-semibold ${showCountdown ? 'text-green-600' : 'text-gray-400'}`}>
-                      {showCountdown ? '✓ Visible' : '✗ Hidden'}
+                    <span className="text-sm font-medium text-gray-700">
+                      Christmas Countdown
+                    </span>
+                    <span
+                      className={`text-sm font-semibold ${showCountdown ? "text-green-600" : "text-gray-400"}`}
+                    >
+                      {showCountdown ? "✓ Visible" : "✗ Hidden"}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <span className="text-sm font-medium text-gray-700">
+                      News Feed
+                    </span>
+                    <span
+                      className={`text-sm font-semibold ${showNewsFeed ? "text-green-600" : "text-gray-400"}`}
+                    >
+                      {showNewsFeed ? "✓ Visible" : "✗ Hidden"}
                     </span>
                   </div>
                 </div>
@@ -368,8 +498,9 @@ export default function ManageThemeSettings() {
                 {/* Info Box */}
                 <div className="bg-christmas-gold/10 border border-christmas-gold rounded-lg p-4">
                   <p className="text-sm text-christmas-dark">
-                    <strong>Note:</strong> Theme changes will be applied across all pages of the website once saved. 
-                    Visitors will see the new theme immediately.
+                    <strong>Note:</strong> Theme changes will be applied across
+                    all pages of the website once saved. Visitors will see the
+                    new theme immediately.
                   </p>
                 </div>
               </div>

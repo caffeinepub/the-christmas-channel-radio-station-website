@@ -4,10 +4,12 @@ export default function ScrollingBanner() {
       <div className="marquee-container">
         <div className="marquee-content hover:pause-animation">
           <span className="marquee-text">
-            🎄 The Christmas Channel is powered by Live365 — Tune in now on Live365 or our station website! 🎶
+            🎄 The Christmas Channel is powered by Live365 — Tune in now on
+            Live365 or our station website! 🎶
           </span>
           <span className="marquee-text">
-            🎄 The Christmas Channel is powered by Live365 — Tune in now on Live365 or our station website! 🎶
+            🎄 The Christmas Channel is powered by Live365 — Tune in now on
+            Live365 or our station website! 🎶
           </span>
         </div>
       </div>

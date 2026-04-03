@@ -1,17 +1,17 @@
-import { useState } from 'react';
-import { Radio, Send } from 'lucide-react';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { toast } from 'sonner';
-import { useSubmitSongRequest } from '../hooks/useQueries';
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Radio, Send } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+import { useSubmitSongRequest } from "../hooks/useQueries";
 
 export default function RequestsPage() {
-  const [name, setName] = useState('');
-  const [songTitle, setSongTitle] = useState('');
-  const [message, setMessage] = useState('');
+  const [name, setName] = useState("");
+  const [songTitle, setSongTitle] = useState("");
+  const [message, setMessage] = useState("");
 
   const submitRequest = useSubmitSongRequest();
 
@@ -25,17 +25,17 @@ export default function RequestsPage() {
         message,
       });
 
-      toast.success('Request submitted!', {
+      toast.success("Request submitted!", {
         description: `Thanks ${name}! We'll try to play "${songTitle}" for you soon.`,
       });
 
       // Reset form
-      setName('');
-      setSongTitle('');
-      setMessage('');
-    } catch (error) {
-      toast.error('Failed to submit request', {
-        description: 'Please try again later.',
+      setName("");
+      setSongTitle("");
+      setMessage("");
+    } catch (_e) {
+      toast.error("Failed to submit request", {
+        description: "Please try again later.",
       });
     }
   };
@@ -62,7 +62,10 @@ export default function RequestsPage() {
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Name */}
               <div>
-                <Label htmlFor="name" className="text-christmas-dark font-medium">
+                <Label
+                  htmlFor="name"
+                  className="text-christmas-dark font-medium"
+                >
                   Your Name *
                 </Label>
                 <Input
@@ -78,7 +81,10 @@ export default function RequestsPage() {
 
               {/* Song Request */}
               <div>
-                <Label htmlFor="song" className="text-christmas-dark font-medium">
+                <Label
+                  htmlFor="song"
+                  className="text-christmas-dark font-medium"
+                >
                   Song Request *
                 </Label>
                 <Input
@@ -94,7 +100,10 @@ export default function RequestsPage() {
 
               {/* Message */}
               <div>
-                <Label htmlFor="message" className="text-christmas-dark font-medium">
+                <Label
+                  htmlFor="message"
+                  className="text-christmas-dark font-medium"
+                >
                   Message (Optional)
                 </Label>
                 <Textarea
@@ -114,7 +123,7 @@ export default function RequestsPage() {
                 className="w-full bg-christmas-red hover:bg-christmas-red-dark text-white font-bold py-6 text-lg"
               >
                 {submitRequest.isPending ? (
-                  'Submitting...'
+                  "Submitting..."
                 ) : (
                   <>
                     <Send className="mr-2 h-5 w-5" />

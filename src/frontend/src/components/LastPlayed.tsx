@@ -1,5 +1,5 @@
-import { History } from 'lucide-react';
-import { Card } from '@/components/ui/card';
+import { Card } from "@/components/ui/card";
+import { History } from "lucide-react";
 
 export default function LastPlayed() {
   return (
@@ -18,7 +18,7 @@ export default function LastPlayed() {
             </h3>
           </div>
         </div>
-        
+
         {/* Embedded Live365 Last Played Player */}
         <div className="flex justify-center">
           <div className="w-full max-w-[450px] rounded-lg overflow-hidden border-2 border-christmas-gold/30 shadow-md">

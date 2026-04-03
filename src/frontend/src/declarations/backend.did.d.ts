@@ -10,7 +10,9 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
-export type BackgroundImage = { 'festiveTree' : null } |
+export type BackgroundImage = { 'christmasLights' : null } |
+  { 'festiveTree' : null } |
+  { 'holidayDecorations' : null } |
   { 'twinklingLights' : null } |
   { 'snowyVillage' : null };
 export interface DJProfile {
@@ -32,11 +34,13 @@ export interface OnAirOverride {
   'description' : string,
 }
 export interface Program {
+  'bio' : string,
   'startTime' : string,
   'endTime' : string,
   'name' : string,
   'description' : string,
 }
+export interface ProgramDaySlot { 'day' : string, 'program' : Program }
 export interface SongRequest {
   'songTitle' : string,
   'name' : string,
@@ -52,9 +56,11 @@ export type TailwindColor = { 'red' : null } |
   { 'gold' : null } |
   { 'purple' : null } |
   { 'green' : null } |
+  { 'silver' : null } |
   { 'brown' : null } |
   { 'white' : null };
 export interface ThemeSettings {
+  'showNewsFeed' : boolean,
   'primaryColor' : TailwindColor,
   'showCountdown' : boolean,
   'accentColor' : TailwindColor,
@@ -63,6 +69,14 @@ export interface ThemeSettings {
 }
 export type Time = bigint;
 export interface UserProfile { 'name' : string }
+export interface BlogPost {
+  'id' : string,
+  'title' : string,
+  'content' : string,
+  'author' : string,
+  'createdAt' : Time,
+  'published' : boolean,
+}
 export type UserRole = { 'admin' : null } |
   { 'user' : null } |
   { 'guest' : null };
@@ -102,21 +116,28 @@ export interface _SERVICE {
   >,
   '_caffeineStorageUpdateGatewayPrincipals' : ActorMethod<[], undefined>,
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
-  'addCustomProgram' : ActorMethod<[string, string, string, string], undefined>,
+  'addCustomProgram' : ActorMethod<
+    [string, string, string, string, string, Array<string>],
+    undefined
+  >,
   'addDJProfile' : ActorMethod<[string, string, ExternalBlob], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'clearNowPlaying' : ActorMethod<[], undefined>,
   'clearOnAirOverride' : ActorMethod<[], undefined>,
   'clearSongRequests' : ActorMethod<[], undefined>,
   'deleteDJProfile' : ActorMethod<[string], undefined>,
-  'deleteProgram' : ActorMethod<[string], undefined>,
+  'deleteProgram' : ActorMethod<[string, string], undefined>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getDJProfiles' : ActorMethod<[], Array<DJProfile>>,
   'getLastUpdateResult' : ActorMethod<[], [] | [LastUpdateResult]>,
   'getNowPlaying' : ActorMethod<[], [] | [NowPlaying]>,
   'getOnAirOverride' : ActorMethod<[], [] | [OnAirOverride]>,
-  'getProgramSchedule' : ActorMethod<[], Array<Program>>,
+  'getProgramSchedule' : ActorMethod<
+    [],
+    Array<[string, Array<ProgramDaySlot>]>
+  >,
+  'getProgramsForDay' : ActorMethod<[string], Array<Program>>,
   'getSongRequests' : ActorMethod<[], Array<SongRequest>>,
   'getStationInformation' : ActorMethod<[], [] | [StationInformation]>,
   'getThemeSettings' : ActorMethod<[], ThemeSettings>,
@@ -131,13 +152,23 @@ export interface _SERVICE {
   'submitSongRequest' : ActorMethod<[SongRequest], undefined>,
   'updateDJProfile' : ActorMethod<[string, string, ExternalBlob], undefined>,
   'updateNowPlaying' : ActorMethod<[string, string], undefined>,
-  'updateProgram' : ActorMethod<[string, string, string, string], undefined>,
+  'updateProgram' : ActorMethod<
+    [string, string, string, string, string, string, string],
+    undefined
+  >,
   'updateStationInformation' : ActorMethod<[StationInformation], undefined>,
   'updateThemeSettings' : ActorMethod<
-    [boolean, boolean, BackgroundImage, TailwindColor, TailwindColor],
+    [boolean, boolean, boolean, BackgroundImage, TailwindColor, TailwindColor],
     undefined
   >,
   'updateWeatherData' : ActorMethod<[WeatherData], undefined>,
+  'createBlogPost' : ActorMethod<[string, string, string], string>,
+  'deleteBlogPost' : ActorMethod<[string], undefined>,
+  'getAllBlogPosts' : ActorMethod<[], Array<BlogPost>>,
+  'getBlogPosts' : ActorMethod<[], Array<BlogPost>>,
+  'publishBlogPost' : ActorMethod<[string], undefined>,
+  'unpublishBlogPost' : ActorMethod<[string], undefined>,
+  'updateBlogPost' : ActorMethod<[string, string, string, string], undefined>,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

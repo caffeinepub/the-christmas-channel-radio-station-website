@@ -1,20 +1,20 @@
-import Map "mo:core/Map";
 import Text "mo:core/Text";
 import Order "mo:core/Order";
 import Principal "mo:core/Principal";
 import Runtime "mo:core/Runtime";
-import Iter "mo:core/Iter";
 import Array "mo:core/Array";
 import Storage "blob-storage/Storage";
-import Nat "mo:core/Nat";
 import MixinStorage "blob-storage/Mixin";
 import Time "mo:core/Time";
+import Map "mo:core/Map";
 import List "mo:core/List";
+
 
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
 
-actor {
+// Specify the data migration function in with-clause.
+ actor {
   include MixinStorage();
 
   public type DJProfile = {
@@ -26,8 +26,19 @@ actor {
   public type Program = {
     name : Text;
     description : Text;
+    bio : Text;
     startTime : Text;
     endTime : Text;
+  };
+
+  public type ProgramDaySlot = {
+    day : Text;
+    program : Program;
+  };
+
+  public type ProgramEntry = {
+    program : Program;
+    days : [Text];
   };
 
   public type NowPlaying = {
@@ -41,6 +52,7 @@ actor {
 
   public type ThemeSettings = {
     showCountdown : Bool;
+    showNewsFeed : Bool;
     snowEnabled : Bool;
     backgroundImage : BackgroundImage;
     primaryColor : TailwindColor;
@@ -63,6 +75,8 @@ actor {
     #snowyVillage;
     #twinklingLights;
     #festiveTree;
+    #holidayDecorations;
+    #christmasLights;
   };
 
   public type TailwindColor = {
@@ -73,6 +87,7 @@ actor {
     #purple;
     #brown;
     #white;
+    #silver;
   };
 
   public type SongRequest = {
@@ -97,67 +112,28 @@ actor {
   public type StationInformation = {
     title : Text;
     description : Text;
-    content : Text; // Rich text (HTML/Markdown)
+    content : Text;
   };
 
-  // stable across upgrades and can be initialized only once.
+  public type BlogPost = {
+    id : Text;
+    title : Text;
+    content : Text;
+    author : Text;
+    createdAt : Time.Time;
+    published : Bool;
+  };
+
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
 
-  let djProfiles = Map.empty<Text, DJProfile>();
+  var djProfiles = Map.empty<Text, DJProfile>();
 
-  let programSchedule = Map.fromIter<Text, Program>(
-    [
-      (
-        "Casey Kasem's American Top 40 Christmas Edition",
-        {
-          name = "Casey Kasem's American Top 40 Christmas Edition";
-          description = "Holiday countdown classics hosted by Casey Kasem, featuring the most beloved Christmas hits of all time.";
-          startTime = "Sundays 3:00 PM";
-          endTime = "7:00 PM (CST)";
-        },
-      ),
-      (
-        "Afternoons with Mark Huotari",
-        {
-          name = "Afternoons with Mark Huotari";
-          description = "Join Mark Huotari for cheerful Christmas tunes and warm afternoon vibes to brighten your weekdays.";
-          startTime = "Weekdays 2:00 PM";
-          endTime = "7:00 PM (CST)";
-        },
-      ),
-      (
-        "The Late Night Show with Mark Huotari",
-        {
-          name = "The Late Night Show with Mark Huotari";
-          description = "Hosted by Mark Huotari — unwind with smooth Christmas tunes and festive late-night stories.";
-          startTime = "7:00 PM";
-          endTime = "12:00 AM (CST)";
-        },
-      ),
-      (
-        "Mornings with Mark Huotari",
-        {
-          name = "Mornings with Mark Huotari";
-          description = "Ease into the weekend with cheerful Christmas hits and warm morning vibes hosted by Mark Huotari.";
-          startTime = "Weekends 6:00 AM";
-          endTime = "12:00 PM (CST)";
-        },
-      ),
-      (
-        "Auto DJ",
-        {
-          name = "Auto DJ";
-          description = "Continuous festive tunes and Christmas classics from The Christmas Channel Auto DJ.";
-          startTime = "Daily 2:00 PM";
-          endTime = "7:00 PM (CST)";
-        },
-      ),
-    ].values(),
-  );
+  var programSchedule = Map.empty<Text, [ProgramDaySlot]>();
 
   var themeSettings : ThemeSettings = {
     showCountdown = true;
+    showNewsFeed = true;
     snowEnabled = true;
     backgroundImage = #snowyVillage;
     primaryColor = #red;
@@ -168,7 +144,6 @@ actor {
 
   let userProfiles = Map.empty<Principal, UserProfile>();
 
-  // Weather Data
   var weatherData : ?WeatherData = null;
   var lastWeatherFetch : ?Nat = null;
 
@@ -178,8 +153,11 @@ actor {
 
   var onAirOverride : ?OnAirOverride = null;
 
-  // Station Information Backend Storage
   var stationInformation : ?StationInformation = null;
+
+  var blogPosts = Map.empty<Text, BlogPost>();
+
+  var blogPostCounter : Nat = 0;
 
   module DJProfile {
     public func compareByName(dj1 : DJProfile, dj2 : DJProfile) : Order.Order {
@@ -193,7 +171,27 @@ actor {
     };
   };
 
-  // User Profile Management
+  module ProgramDaySlot {
+    public func compareByDayAndTime(slot1 : ProgramDaySlot, slot2 : ProgramDaySlot) : Order.Order {
+      let dayComparison = Text.compare(slot1.day, slot2.day);
+      switch (dayComparison) {
+        case (#less) { #less };
+        case (#greater) { #greater };
+        case (#equal) {
+          Text.compare(slot1.program.startTime, slot2.program.startTime);
+        };
+      };
+    };
+  };
+
+  module BlogPost {
+    public func compareByCreatedAt(p1 : BlogPost, p2 : BlogPost) : Order.Order {
+      if (p1.createdAt > p2.createdAt) { #less }
+      else if (p1.createdAt < p2.createdAt) { #greater }
+      else { #equal };
+    };
+  };
+
   public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can access profiles");
@@ -215,7 +213,6 @@ actor {
     userProfiles.add(caller, profile);
   };
 
-  // DJ Profile Management
   public shared ({ caller }) func addDJProfile(name : Text, bio : Text, photo : Storage.ExternalBlob) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
       Runtime.trap("Unauthorized: Only admins can add DJ profiles");
@@ -250,54 +247,77 @@ actor {
     djProfiles.remove(name);
   };
 
-  // Program Schedule Management
   public shared ({ caller }) func addCustomProgram(
     name : Text,
     description : Text,
+    bio : Text,
     startTime : Text,
     endTime : Text,
+    days : [Text],
   ) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
       Runtime.trap("Unauthorized: Only admins can add programs");
     };
-    if (programSchedule.containsKey(name)) {
-      Runtime.trap("Program already exists");
+
+    let existingEntries = switch (programSchedule.get(name)) {
+      case (?entries) { entries };
+      case (null) { [] };
     };
-    let program : Program = { name; description; startTime; endTime };
-    programSchedule.add(name, program);
+
+    let newEntries = existingEntries.concat(
+      days.map(func(day) { { day; program = { name; description; bio; startTime; endTime } } })
+    );
+
+    programSchedule.add(name, newEntries);
   };
 
   public shared ({ caller }) func updateProgram(
     name : Text,
     description : Text,
+    bio : Text,
     startTime : Text,
     endTime : Text,
+    oldDay : Text,
+    newDay : Text,
   ) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
       Runtime.trap("Unauthorized: Only admins can update programs");
     };
     switch (programSchedule.get(name)) {
       case (null) { Runtime.trap("Program not found") };
-      case (?_) {
-        let updatedProgram : Program = {
-          name;
-          description;
-          startTime;
-          endTime;
-        };
-        programSchedule.add(name, updatedProgram);
+      case (?entries) {
+        let updatedEntries = entries.map(
+          func(entry) {
+            if (entry.day == oldDay) {
+              {
+                day = newDay;
+                program = { name; description; bio; startTime; endTime };
+              };
+            } else {
+              entry;
+            };
+          }
+        );
+        programSchedule.add(name, updatedEntries);
       };
     };
   };
 
-  public shared ({ caller }) func deleteProgram(name : Text) : async () {
+  public shared ({ caller }) func deleteProgram(name : Text, day : Text) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
       Runtime.trap("Unauthorized: Only admins can delete programs");
     };
-    if (not (programSchedule.containsKey(name))) {
-      Runtime.trap("Program not found");
+    switch (programSchedule.get(name)) {
+      case (null) { Runtime.trap("Program not found") };
+      case (?entries) {
+        let filteredEntries = entries.filter(func(entry) { entry.day != day });
+        if (filteredEntries.size() == 0) {
+          programSchedule.remove(name);
+        } else {
+          programSchedule.add(name, filteredEntries);
+        };
+      };
     };
-    programSchedule.remove(name);
   };
 
   public shared ({ caller }) func updateNowPlaying(title : Text, artist : Text) : async () {
@@ -316,6 +336,7 @@ actor {
 
   public shared ({ caller }) func updateThemeSettings(
     showCountdown : Bool,
+    showNewsFeed : Bool,
     snowEnabled : Bool,
     backgroundImage : BackgroundImage,
     primaryColor : TailwindColor,
@@ -326,6 +347,7 @@ actor {
     };
     themeSettings := {
       showCountdown;
+      showNewsFeed;
       snowEnabled;
       backgroundImage;
       primaryColor;
@@ -368,15 +390,15 @@ actor {
     djProfiles.values().toArray().sort(DJProfile.compareByName);
   };
 
-  public query func getProgramSchedule() : async [Program] {
-    programSchedule.values().toArray().sort(Program.compareByStartTime);
+  public query func getProgramSchedule() : async [(Text, [ProgramDaySlot])] {
+    programSchedule.toArray();
   };
 
   public query func getNowPlaying() : async ?NowPlaying {
     currentSong;
   };
 
-  public shared ({ caller }) func submitSongRequest(songRequest : SongRequest) : async () {
+  public shared func submitSongRequest(songRequest : SongRequest) : async () {
     if (songRequest.name == "" or songRequest.songTitle == "") {
       Runtime.trap("Name and song title cannot be empty");
     };
@@ -397,24 +419,17 @@ actor {
     songRequests.clear();
   };
 
-  // --- New Functionality ---
-
   public shared ({ caller }) func runManualUpdate(files : [Text]) : async LastUpdateResult {
     if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
       Runtime.trap("Unauthorized: Only admins can perform manual updates");
     };
 
-    let filesIter = files.values();
-    let filesJoined : Text = filesIter.join(", ");
+    let filesJoined = files.values().join(", ");
 
     let updateResultText : Text = "Manual update completed successfully for: " # filesJoined;
     let updateTime = Time.now();
 
-    let updateResult : LastUpdateResult = {
-      resultText = updateResultText;
-      updateTime;
-      updateFailed = false;
-    };
+    let updateResult : LastUpdateResult = { resultText = updateResultText; updateTime; updateFailed = false };
 
     lastUpdateResult := ?updateResult;
 
@@ -446,7 +461,6 @@ actor {
     onAirOverride;
   };
 
-  // --- Station Information Management ---
   public shared ({ caller }) func updateStationInformation(stationInfo : StationInformation) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
       Runtime.trap("Unauthorized: Only admins can update station information");
@@ -456,5 +470,124 @@ actor {
 
   public query func getStationInformation() : async ?StationInformation {
     stationInformation;
+  };
+
+  public query ({ caller }) func getProgramsForDay(day : Text) : async [Program] {
+    let allEntries = programSchedule.toArray();
+    var filteredPrograms : [Program] = [];
+    for ((_, entries) in allEntries.values()) {
+      for (entry in entries.values()) {
+        if (entry.day == day) {
+          filteredPrograms := filteredPrograms.concat([entry.program]);
+        };
+      };
+    };
+    filteredPrograms.sort(Program.compareByStartTime);
+  };
+
+  // Blog Post CRUD
+
+  public shared ({ caller }) func createBlogPost(title : Text, content : Text, author : Text) : async Text {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can create blog posts");
+    };
+    if (title == "") {
+      Runtime.trap("Title cannot be empty");
+    };
+    blogPostCounter += 1;
+    let id = "post-" # Nat.toText(blogPostCounter);
+    let post : BlogPost = {
+      id;
+      title;
+      content;
+      author;
+      createdAt = Time.now();
+      published = false;
+    };
+    blogPosts.add(id, post);
+    id;
+  };
+
+  public shared ({ caller }) func updateBlogPost(id : Text, title : Text, content : Text, author : Text) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can update blog posts");
+    };
+    switch (blogPosts.get(id)) {
+      case (null) { Runtime.trap("Blog post not found") };
+      case (?existing) {
+        let updated : BlogPost = {
+          id;
+          title;
+          content;
+          author;
+          createdAt = existing.createdAt;
+          published = existing.published;
+        };
+        blogPosts.add(id, updated);
+      };
+    };
+  };
+
+  public shared ({ caller }) func deleteBlogPost(id : Text) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can delete blog posts");
+    };
+    if (not (blogPosts.containsKey(id))) {
+      Runtime.trap("Blog post not found");
+    };
+    blogPosts.remove(id);
+  };
+
+  public shared ({ caller }) func publishBlogPost(id : Text) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can publish blog posts");
+    };
+    switch (blogPosts.get(id)) {
+      case (null) { Runtime.trap("Blog post not found") };
+      case (?existing) {
+        let updated : BlogPost = {
+          id = existing.id;
+          title = existing.title;
+          content = existing.content;
+          author = existing.author;
+          createdAt = existing.createdAt;
+          published = true;
+        };
+        blogPosts.add(id, updated);
+      };
+    };
+  };
+
+  public shared ({ caller }) func unpublishBlogPost(id : Text) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can unpublish blog posts");
+    };
+    switch (blogPosts.get(id)) {
+      case (null) { Runtime.trap("Blog post not found") };
+      case (?existing) {
+        let updated : BlogPost = {
+          id = existing.id;
+          title = existing.title;
+          content = existing.content;
+          author = existing.author;
+          createdAt = existing.createdAt;
+          published = false;
+        };
+        blogPosts.add(id, updated);
+      };
+    };
+  };
+
+  public query func getBlogPosts() : async [BlogPost] {
+    let all = blogPosts.values().toArray();
+    let published = all.filter(func(p : BlogPost) : Bool { p.published });
+    published.sort(BlogPost.compareByCreatedAt);
+  };
+
+  public shared ({ caller }) func getAllBlogPosts() : async [BlogPost] {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can view all blog posts");
+    };
+    blogPosts.values().toArray().sort(BlogPost.compareByCreatedAt);
   };
 };

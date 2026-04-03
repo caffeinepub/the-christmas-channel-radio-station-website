@@ -1,139 +1,93 @@
+@import url("https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    /* Christmas Red */
-    --christmas-red: oklch(0.55 0.22 25);
-    --christmas-red-dark: oklch(0.45 0.20 25);
-    --christmas-red-light: oklch(0.65 0.18 25);
+    /* Christmas Color Palette - Light Mode */
+    --background: oklch(98% 0.01 120); /* Soft white with slight warmth */
+    --foreground: oklch(20% 0.02 30); /* Deep charcoal for text */
 
-    /* Christmas Green */
-    --christmas-green: oklch(0.50 0.15 145);
-    --christmas-green-dark: oklch(0.40 0.13 145);
-    --christmas-green-light: oklch(0.60 0.12 145);
+    --card: oklch(100% 0 0); /* Pure white for cards */
+    --card-foreground: oklch(20% 0.02 30);
 
-    /* Christmas Gold */
-    --christmas-gold: oklch(0.75 0.15 85);
-    --christmas-gold-light: oklch(0.85 0.12 85);
-    --christmas-gold-dark: oklch(0.65 0.18 85);
+    --popover: oklch(100% 0 0);
+    --popover-foreground: oklch(20% 0.02 30);
 
-    /* Neutral Colors */
-    --christmas-dark: oklch(0.25 0.02 25);
-    --christmas-light: oklch(0.98 0.01 85);
+    --primary: oklch(55% 0.22 25); /* Rich Christmas red */
+    --primary-foreground: oklch(98% 0.01 25);
 
-    /* Background and Foreground */
-    --background: oklch(0.98 0.01 85);
-    --foreground: oklch(0.25 0.02 25);
+    --secondary: oklch(70% 0.15 140); /* Festive green */
+    --secondary-foreground: oklch(20% 0.02 140);
 
-    /* Card */
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.25 0.02 25);
+    --muted: oklch(95% 0.01 120);
+    --muted-foreground: oklch(45% 0.02 30);
 
-    /* Popover */
-    --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.25 0.02 25);
+    --accent: oklch(75% 0.18 85); /* Warm gold */
+    --accent-foreground: oklch(20% 0.02 85);
 
-    /* Primary */
-    --primary: oklch(0.55 0.22 25);
-    --primary-foreground: oklch(0.98 0.01 85);
+    --destructive: oklch(55% 0.22 25);
+    --destructive-foreground: oklch(98% 0.01 25);
 
-    /* Secondary */
-    --secondary: oklch(0.50 0.15 145);
-    --secondary-foreground: oklch(0.98 0.01 85);
+    --border: oklch(85% 0.02 85);
+    --input: oklch(85% 0.02 85);
+    --ring: oklch(55% 0.22 25);
 
-    /* Muted */
-    --muted: oklch(0.92 0.01 85);
-    --muted-foreground: oklch(0.50 0.02 25);
+    --radius: 0.75rem;
 
-    /* Accent */
-    --accent: oklch(0.75 0.15 85);
-    --accent-foreground: oklch(0.25 0.02 25);
-
-    /* Destructive */
-    --destructive: oklch(0.55 0.22 25);
-    --destructive-foreground: oklch(0.98 0.01 85);
-
-    /* Border */
-    --border: oklch(0.88 0.02 85);
-    --input: oklch(0.88 0.02 85);
-    --ring: oklch(0.55 0.22 25);
-
-    /* Radius */
-    --radius: 0.5rem;
-
-    /* Chart Colors */
-    --chart-1: oklch(0.55 0.22 25);
-    --chart-2: oklch(0.50 0.15 145);
-    --chart-3: oklch(0.75 0.15 85);
-    --chart-4: oklch(0.65 0.18 200);
-    --chart-5: oklch(0.60 0.12 300);
+    /* Christmas-specific colors */
+    --christmas-red: oklch(55% 0.22 25);
+    --christmas-red-dark: oklch(45% 0.2 25);
+    --christmas-red-light: oklch(65% 0.18 25);
+    --christmas-green: oklch(70% 0.15 140);
+    --christmas-green-dark: oklch(55% 0.13 140);
+    --christmas-gold: oklch(75% 0.18 85);
+    --christmas-gold-light: oklch(85% 0.15 85);
+    --christmas-dark: oklch(20% 0.02 30);
+    --christmas-light: oklch(98% 0.01 120);
   }
 
   .dark {
-    /* Christmas Red */
-    --christmas-red: oklch(0.60 0.22 25);
-    --christmas-red-dark: oklch(0.50 0.20 25);
-    --christmas-red-light: oklch(0.70 0.18 25);
+    /* Christmas Color Palette - Dark Mode */
+    --background: oklch(20% 0.02 30); /* Deep charcoal */
+    --foreground: oklch(98% 0.01 120); /* Soft white */
 
-    /* Christmas Green */
-    --christmas-green: oklch(0.55 0.15 145);
-    --christmas-green-dark: oklch(0.45 0.13 145);
-    --christmas-green-light: oklch(0.65 0.12 145);
+    --card: oklch(25% 0.02 30);
+    --card-foreground: oklch(98% 0.01 120);
 
-    /* Christmas Gold */
-    --christmas-gold: oklch(0.80 0.15 85);
-    --christmas-gold-light: oklch(0.90 0.12 85);
-    --christmas-gold-dark: oklch(0.70 0.18 85);
+    --popover: oklch(25% 0.02 30);
+    --popover-foreground: oklch(98% 0.01 120);
 
-    /* Neutral Colors */
-    --christmas-dark: oklch(0.95 0.01 85);
-    --christmas-light: oklch(0.20 0.02 25);
+    --primary: oklch(65% 0.2 25); /* Brighter red for dark mode */
+    --primary-foreground: oklch(20% 0.02 25);
 
-    /* Background and Foreground */
-    --background: oklch(0.20 0.02 25);
-    --foreground: oklch(0.95 0.01 85);
+    --secondary: oklch(60% 0.13 140); /* Adjusted green */
+    --secondary-foreground: oklch(98% 0.01 140);
 
-    /* Card */
-    --card: oklch(0.25 0.02 25);
-    --card-foreground: oklch(0.95 0.01 85);
+    --muted: oklch(30% 0.02 30);
+    --muted-foreground: oklch(70% 0.02 120);
 
-    /* Popover */
-    --popover: oklch(0.25 0.02 25);
-    --popover-foreground: oklch(0.95 0.01 85);
+    --accent: oklch(70% 0.16 85); /* Adjusted gold */
+    --accent-foreground: oklch(20% 0.02 85);
 
-    /* Primary */
-    --primary: oklch(0.60 0.22 25);
-    --primary-foreground: oklch(0.95 0.01 85);
+    --destructive: oklch(60% 0.2 25);
+    --destructive-foreground: oklch(98% 0.01 25);
 
-    /* Secondary */
-    --secondary: oklch(0.55 0.15 145);
-    --secondary-foreground: oklch(0.95 0.01 85);
+    --border: oklch(35% 0.02 30);
+    --input: oklch(35% 0.02 30);
+    --ring: oklch(65% 0.2 25);
 
-    /* Muted */
-    --muted: oklch(0.30 0.02 25);
-    --muted-foreground: oklch(0.70 0.02 85);
-
-    /* Accent */
-    --accent: oklch(0.80 0.15 85);
-    --accent-foreground: oklch(0.20 0.02 25);
-
-    /* Destructive */
-    --destructive: oklch(0.60 0.22 25);
-    --destructive-foreground: oklch(0.95 0.01 85);
-
-    /* Border */
-    --border: oklch(0.35 0.02 25);
-    --input: oklch(0.35 0.02 25);
-    --ring: oklch(0.60 0.22 25);
-
-    /* Chart Colors */
-    --chart-1: oklch(0.60 0.22 25);
-    --chart-2: oklch(0.55 0.15 145);
-    --chart-3: oklch(0.80 0.15 85);
-    --chart-4: oklch(0.70 0.18 200);
-    --chart-5: oklch(0.65 0.12 300);
+    /* Christmas-specific colors for dark mode */
+    --christmas-red: oklch(65% 0.2 25);
+    --christmas-red-dark: oklch(55% 0.18 25);
+    --christmas-red-light: oklch(75% 0.16 25);
+    --christmas-green: oklch(60% 0.13 140);
+    --christmas-green-dark: oklch(50% 0.11 140);
+    --christmas-gold: oklch(70% 0.16 85);
+    --christmas-gold-light: oklch(80% 0.14 85);
+    --christmas-dark: oklch(98% 0.01 120);
+    --christmas-light: oklch(20% 0.02 30);
   }
 }
 
@@ -147,32 +101,43 @@
   }
 }
 
-/* Christmas-themed background */
-body {
-  background-image: 
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.85)),
-    url('/assets/generated/christmas-background.dim_1920x1080.jpg');
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-  background-repeat: no-repeat;
-}
+/* Custom scrollbar styles */
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
 
-.dark body {
-  background-image: 
-    linear-gradient(to bottom, rgba(20, 20, 20, 0.9), rgba(20, 20, 20, 0.85)),
-    url('/assets/generated/christmas-background.dim_1920x1080.jpg');
-}
+  .scrollbar-thumb-christmas-gold {
+    scrollbar-color: var(--christmas-gold) transparent;
+  }
 
-/* Christmas font */
-@import url('https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@400;700&display=swap');
+  .scrollbar-track-gray-100 {
+    scrollbar-color: var(--christmas-gold) oklch(95% 0.01 120);
+  }
 
-.font-christmas {
-  font-family: 'Mountains of Christmas', cursive;
+  /* Webkit scrollbar styles for better browser support */
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thumb-christmas-gold::-webkit-scrollbar-thumb {
+    background-color: var(--christmas-gold);
+    border-radius: 3px;
+  }
+
+  .scrollbar-track-gray-100::-webkit-scrollbar-track {
+    background-color: oklch(95% 0.01 120);
+    border-radius: 3px;
+  }
+
+  .scrollbar-thumb-christmas-gold::-webkit-scrollbar-thumb:hover {
+    background-color: var(--christmas-gold-light);
+  }
 }
 
 /* Snowflake animation */
-@keyframes snowfall {
+@keyframes fall {
   0% {
     transform: translateY(-10vh) translateX(0);
     opacity: 0;
@@ -184,26 +149,33 @@ body {
     opacity: 1;
   }
   100% {
-    transform: translateY(110vh) translateX(50px);
+    transform: translateY(110vh) translateX(var(--drift, 0));
     opacity: 0;
   }
 }
 
+@keyframes sway {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(var(--sway-distance, 20px));
+  }
+}
+
 .snowflake {
-  position: fixed;
-  top: -10vh;
-  z-index: 9999;
-  pointer-events: none;
-  animation: snowfall linear infinite;
-  color: white;
-  text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+  animation: fall var(--fall-duration, 10s) linear infinite, sway
+    var(--sway-duration, 3s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
 }
 
 /* Twinkling lights animation */
 @keyframes twinkle {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.3;
-    transform: scale(1);
+    transform: scale(0.8);
   }
   50% {
     opacity: 1;
@@ -212,39 +184,14 @@ body {
 }
 
 .twinkling-light {
-  position: fixed;
-  z-index: 9998;
-  pointer-events: none;
-  animation: twinkle ease-in-out infinite;
-  border-radius: 50%;
-  filter: blur(2px);
+  animation: twinkle var(--twinkle-duration, 2s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
 }
 
-/* Shimmer effect for cards */
-@keyframes shimmer {
-  0% {
-    background-position: -1000px 0;
-  }
-  100% {
-    background-position: 1000px 0;
-  }
-}
-
-.shimmer {
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.3) 50%,
-    transparent 100%
-  );
-  background-size: 1000px 100%;
-  animation: shimmer 3s infinite;
-}
-
-/* Marquee animation for Casey Kasem's show and scrolling banner */
+/* Marquee animation for scrolling text */
 @keyframes marquee {
   0% {
-    transform: translateX(0);
+    transform: translateX(0%);
   }
   100% {
     transform: translateX(-50%);
@@ -258,36 +205,35 @@ body {
 }
 
 .marquee-content {
-  display: inline-block;
+  display: inline-flex;
   animation: marquee 20s linear infinite;
 }
 
-.marquee-content:hover {
+.marquee-container:hover .marquee-content {
   animation-play-state: paused;
 }
 
 .marquee-text {
   display: inline-block;
-  padding-right: 4rem;
+  padding: 0 2rem;
   font-size: 1.5rem;
   font-weight: bold;
-  background: linear-gradient(90deg, 
-    oklch(0.55 0.22 25) 0%, 
-    oklch(0.75 0.15 85) 25%, 
-    oklch(0.55 0.22 25) 50%, 
-    oklch(0.75 0.15 85) 75%, 
-    oklch(0.55 0.22 25) 100%
+  background: linear-gradient(
+    90deg,
+    var(--christmas-red) 0%,
+    var(--christmas-gold) 25%,
+    var(--christmas-red) 50%,
+    var(--christmas-gold) 75%,
+    var(--christmas-red) 100%
   );
-  background-size: 200% auto;
-  -webkit-background-clip: text;
   background-clip: text;
+  -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
-  filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.3));
+  text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
 }
 
-/* Fade-in animation for upcoming shows */
-@keyframes fade-in {
+/* Fade-in animation */
+@keyframes fadeIn {
   from {
     opacity: 0;
     transform: translateY(10px);
@@ -299,95 +245,65 @@ body {
 }
 
 .animate-fade-in {
-  animation: fade-in 0.5s ease-out forwards;
-  opacity: 0;
+  animation: fadeIn 0.5s ease-out forwards;
 }
 
-/* Enhanced On Air Display Animations */
-
-/* Glowing background animation */
-@keyframes on-air-glow {
-  0%, 100% {
+/* On Air Display animations */
+@keyframes onAirGlow {
+  0%,
+  100% {
     opacity: 0.3;
-    background-position: 0% 50%;
   }
   50% {
     opacity: 0.6;
-    background-position: 100% 50%;
   }
 }
 
-.animate-on-air-glow {
-  background-size: 200% 200%;
-  animation: on-air-glow 3s ease-in-out infinite;
-}
-
-/* Pulsing border animation */
-@keyframes on-air-border-pulse {
-  0%, 100% {
-    opacity: 0.4;
-    box-shadow: 0 0 10px oklch(0.75 0.15 85 / 0.3);
+@keyframes onAirBorderPulse {
+  0%,
+  100% {
+    opacity: 0.5;
+    box-shadow: 0 0 10px var(--christmas-gold);
   }
   50% {
-    opacity: 0.8;
-    box-shadow: 0 0 25px oklch(0.75 0.15 85 / 0.6), 0 0 40px oklch(0.55 0.22 25 / 0.4);
+    opacity: 1;
+    box-shadow: 0 0 30px var(--christmas-gold);
   }
 }
 
-.animate-on-air-border-pulse {
-  animation: on-air-border-pulse 2s ease-in-out infinite;
+@keyframes onAirIconPulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
 }
 
-/* Radio icon pulse animation */
-@keyframes on-air-icon-pulse {
-  0%, 100% {
+@keyframes onAirIconGlow {
+  0%,
+  100% {
+    opacity: 0.3;
     transform: scale(1);
-    box-shadow: 0 0 15px oklch(0.55 0.22 25 / 0.5), 0 0 30px oklch(0.75 0.15 85 / 0.3);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.3);
+  }
+}
+
+@keyframes onAirBadge {
+  0%,
+  100% {
+    transform: scale(1);
   }
   50% {
     transform: scale(1.05);
-    box-shadow: 0 0 25px oklch(0.55 0.22 25 / 0.7), 0 0 50px oklch(0.75 0.15 85 / 0.5);
   }
 }
 
-.animate-on-air-icon-pulse {
-  animation: on-air-icon-pulse 2s ease-in-out infinite;
-}
-
-/* Radio icon glow animation */
-@keyframes on-air-icon-glow {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 0.3;
-  }
-  50% {
-    transform: scale(1.2);
-    opacity: 0.6;
-  }
-}
-
-.animate-on-air-icon-glow {
-  animation: on-air-icon-glow 2s ease-in-out infinite;
-}
-
-/* Badge pulse animation */
-@keyframes on-air-badge {
-  0%, 100% {
-    transform: scale(1);
-    box-shadow: 0 2px 8px oklch(0.55 0.22 25 / 0.4);
-  }
-  50% {
-    transform: scale(1.02);
-    box-shadow: 0 4px 16px oklch(0.55 0.22 25 / 0.6), 0 0 20px oklch(0.75 0.15 85 / 0.4);
-  }
-}
-
-.animate-on-air-badge {
-  animation: on-air-badge 1.5s ease-in-out infinite;
-}
-
-/* Badge shimmer animation */
-@keyframes on-air-badge-shimmer {
+@keyframes onAirBadgeShimmer {
   0% {
     transform: translateX(-100%);
   }
@@ -396,70 +312,48 @@ body {
   }
 }
 
-.animate-on-air-badge-shimmer {
-  animation: on-air-badge-shimmer 3s ease-in-out infinite;
-}
-
-/* Text glow animation for program name */
-@keyframes on-air-text-glow {
-  0%, 100% {
-    text-shadow: 0 0 5px oklch(0.75 0.15 85 / 0.3);
+@keyframes onAirTextGlow {
+  0%,
+  100% {
+    text-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
   }
   50% {
-    text-shadow: 0 0 15px oklch(0.75 0.15 85 / 0.6), 0 0 25px oklch(0.55 0.22 25 / 0.3);
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
   }
+}
+
+.animate-on-air-glow {
+  animation: onAirGlow 3s ease-in-out infinite;
+}
+
+.animate-on-air-border-pulse {
+  animation: onAirBorderPulse 2s ease-in-out infinite;
+}
+
+.animate-on-air-icon-pulse {
+  animation: onAirIconPulse 2s ease-in-out infinite;
+}
+
+.animate-on-air-icon-glow {
+  animation: onAirIconGlow 2s ease-in-out infinite;
+}
+
+.animate-on-air-badge {
+  animation: onAirBadge 2s ease-in-out infinite;
+}
+
+.animate-on-air-badge-shimmer {
+  animation: onAirBadgeShimmer 3s ease-in-out infinite;
 }
 
 .animate-on-air-text-glow {
-  animation: on-air-text-glow 2.5s ease-in-out infinite;
+  animation: onAirTextGlow 2s ease-in-out infinite;
 }
 
-/* Overall card highlight effect */
-.on-air-highlight {
-  position: relative;
-  transform: translateY(0);
-  transition: transform 0.3s ease;
-}
-
-.on-air-highlight:hover {
-  transform: translateY(-2px);
-}
-
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 12px;
-}
-
-::-webkit-scrollbar-track {
-  background: oklch(0.92 0.01 85);
-}
-
-::-webkit-scrollbar-thumb {
-  background: oklch(0.55 0.22 25);
-  border-radius: 6px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: oklch(0.45 0.20 25);
-}
-
-.dark ::-webkit-scrollbar-track {
-  background: oklch(0.25 0.02 25);
-}
-
-.dark ::-webkit-scrollbar-thumb {
-  background: oklch(0.60 0.22 25);
-}
-
-.dark ::-webkit-scrollbar-thumb:hover {
-  background: oklch(0.70 0.18 25);
-}
-
-/* Reduced motion support */
+/* Reduce motion for accessibility */
 @media (prefers-reduced-motion: reduce) {
   .snowflake,
   .twinkling-light,
-  .shimmer,
   .marquee-content,
   .animate-fade-in,
   .animate-on-air-glow,
@@ -471,31 +365,8 @@ body {
   .animate-on-air-text-glow {
     animation: none !important;
   }
-  
-  .on-air-highlight:hover {
-    transform: none;
-  }
 }
 
-/* Mobile optimizations */
-@media (max-width: 768px) {
-  .snowflake {
-    font-size: 0.8rem;
-  }
-  
-  .twinkling-light {
-    width: 4px;
-    height: 4px;
-  }
-
-  .marquee-text {
-    font-size: 1.25rem;
-  }
-  
-  /* Reduce animation intensity on mobile for performance */
-  .animate-on-air-glow,
-  .animate-on-air-border-pulse,
-  .animate-on-air-icon-glow {
-    animation-duration: 4s;
-  }
+.font-christmas {
+  font-family: "Mountains of Christmas", cursive;
 }

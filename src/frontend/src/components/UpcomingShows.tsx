@@ -1,172 +1,132 @@
-import { Clock } from 'lucide-react';
-import { Card } from '@/components/ui/card';
-import { useGetProgramSchedule } from '../hooks/useQueries';
-import { Skeleton } from '@/components/ui/skeleton';
-import type { Program } from '../backend';
+import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Clock } from "lucide-react";
+import type { ProgramDaySlot } from "../backend";
+import { useGetProgramSchedule } from "../hooks/useQueries";
 
-interface ParsedTime {
-  day: string;
-  hour: number;
-  minute: number;
+const DAYS = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
+
+function parseTimeToMinutes(timeStr: string): number | null {
+  const cleaned = timeStr
+    .replace(/\s+(CST|EST|PST|MST|EDT|CDT|PDT|MDT)/gi, "")
+    .trim();
+  const match = cleaned.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+  if (!match) return null;
+
+  const [, hourStr, minuteStr, period] = match;
+  let hour = Number.parseInt(hourStr, 10);
+  const minute = Number.parseInt(minuteStr, 10);
+
+  if (period.toUpperCase() === "PM" && hour !== 12) hour += 12;
+  else if (period.toUpperCase() === "AM" && hour === 12) hour = 0;
+
+  return hour * 60 + minute;
 }
 
-function parseTimeString(timeStr: string): ParsedTime | null {
-  const cleanedTimeStr = timeStr.replace(/\s+(CST|EST|PST|MST|EDT|CDT|PDT|MDT)/gi, '').trim();
-  
-  const match = cleanedTimeStr.match(/(\w+(?:-\w+)?)\s+(\d{1,2}):(\d{2})\s*(AM|PM)/i);
-  if (!match) {
-    const timeOnlyMatch = cleanedTimeStr.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
-    if (timeOnlyMatch) {
-      const [, hourStr, minuteStr, period] = timeOnlyMatch;
-      let hour = parseInt(hourStr, 10);
-      const minute = parseInt(minuteStr, 10);
+function isDayMatch(slotDay: string, targetDay: string): boolean {
+  if (!slotDay) return false;
+  const d = slotDay.trim();
 
-      if (period.toUpperCase() === 'PM' && hour !== 12) {
-        hour += 12;
-      } else if (period.toUpperCase() === 'AM' && hour === 12) {
-        hour = 0;
-      }
-
-      return { day: 'Any', hour, minute };
-    }
-    return null;
+  if (d.toLowerCase() === "daily" || d.toLowerCase() === "any") return true;
+  if (d.toLowerCase() === "weekdays") {
+    return ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].includes(
+      targetDay,
+    );
   }
-
-  const [, day, hourStr, minuteStr, period] = match;
-  let hour = parseInt(hourStr, 10);
-  const minute = parseInt(minuteStr, 10);
-
-  if (period.toUpperCase() === 'PM' && hour !== 12) {
-    hour += 12;
-  } else if (period.toUpperCase() === 'AM' && hour === 12) {
-    hour = 0;
+  if (d.toLowerCase() === "weekends") {
+    return ["Saturday", "Sunday"].includes(targetDay);
   }
-
-  return { day, hour, minute };
+  if (d.includes("-")) {
+    const [start, end] = d.split("-");
+    const ti = DAYS.indexOf(targetDay);
+    const si = DAYS.indexOf(start);
+    const ei = DAYS.indexOf(end);
+    if (si <= ei) return ti >= si && ti <= ei;
+    return ti >= si || ti <= ei;
+  }
+  return d.replace(/s$/, "") === targetDay.replace(/s$/, "");
 }
 
-function isDayMatch(programDay: string, targetDay: string): boolean {
-  if (programDay === 'Any' || programDay.toLowerCase() === 'daily') return true;
-
-  if (programDay.toLowerCase() === 'weekdays') {
-    const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
-    return weekdays.includes(targetDay);
-  }
-
-  if (programDay.toLowerCase() === 'weekends') {
-    const weekends = ['Saturday', 'Sunday'];
-    return weekends.includes(targetDay);
-  }
-
-  if (programDay.includes('-')) {
-    const [startDay, endDay] = programDay.split('-');
-    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const targetDayIndex = days.indexOf(targetDay);
-    const startIndex = days.indexOf(startDay);
-    const endIndex = days.indexOf(endDay);
-
-    if (startIndex <= endIndex) {
-      return targetDayIndex >= startIndex && targetDayIndex <= endIndex;
-    } else {
-      return targetDayIndex >= startIndex || targetDayIndex <= endIndex;
-    }
-  }
-
-  const normalizedProgramDay = programDay.replace(/s$/, '');
-  const normalizedTargetDay = targetDay.replace(/s$/, '');
-  return normalizedProgramDay === normalizedTargetDay;
-}
-
-function getUpcomingShows(programs: Program[], maxShows: number = 2): Program[] {
+function getUpcomingShows(
+  slots: ProgramDaySlot[],
+  maxShows = 2,
+): ProgramDaySlot[] {
   const now = new Date();
-  const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  const currentDay = days[now.getDay()];
-  const currentHour = now.getHours();
-  const currentMinute = now.getMinutes();
-  const currentTimeInMinutes = currentHour * 60 + currentMinute;
+  const currentTimeInMinutes = now.getHours() * 60 + now.getMinutes();
 
-  // Filter out Auto DJ from upcoming shows
-  const livePrograms = programs.filter(p => p.name !== 'Auto DJ');
+  // Exclude Auto DJ from upcoming shows
+  const liveSlots = slots.filter((s) => s.program.name !== "Auto DJ");
 
-  const upcomingShows: Array<{ program: Program; minutesUntil: number }> = [];
+  const upcoming: Array<{ slot: ProgramDaySlot; minutesUntil: number }> = [];
 
-  // Check today and next 7 days
   for (let dayOffset = 0; dayOffset <= 7; dayOffset++) {
     const checkDate = new Date(now);
     checkDate.setDate(checkDate.getDate() + dayOffset);
-    const checkDay = days[checkDate.getDay()];
+    const checkDay = DAYS[checkDate.getDay()];
 
-    for (const program of livePrograms) {
-      const startTime = parseTimeString(program.startTime);
-      if (!startTime) continue;
+    for (const slot of liveSlots) {
+      if (!isDayMatch(slot.day, checkDay)) continue;
 
-      if (!isDayMatch(startTime.day, checkDay)) continue;
+      const startMin = parseTimeToMinutes(slot.program.startTime);
+      if (startMin === null) continue;
 
-      const startTimeInMinutes = startTime.hour * 60 + startTime.minute;
-      
       let minutesUntil: number;
       if (dayOffset === 0) {
-        // Today
-        minutesUntil = startTimeInMinutes - currentTimeInMinutes;
-        if (minutesUntil <= 0) continue; // Skip if already started or passed
+        minutesUntil = startMin - currentTimeInMinutes;
+        if (minutesUntil <= 0) continue;
       } else {
-        // Future days
         const minutesInDay = 24 * 60;
         const minutesUntilEndOfToday = minutesInDay - currentTimeInMinutes;
-        const minutesInBetweenDays = (dayOffset - 1) * minutesInDay;
-        minutesUntil = minutesUntilEndOfToday + minutesInBetweenDays + startTimeInMinutes;
+        minutesUntil =
+          minutesUntilEndOfToday + (dayOffset - 1) * minutesInDay + startMin;
       }
 
-      upcomingShows.push({ program, minutesUntil });
+      upcoming.push({ slot, minutesUntil });
     }
   }
 
-  // Sort by time until start
-  upcomingShows.sort((a, b) => a.minutesUntil - b.minutesUntil);
-
-  // Return only the requested number of shows
-  return upcomingShows.slice(0, maxShows).map(item => item.program);
+  upcoming.sort((a, b) => a.minutesUntil - b.minutesUntil);
+  return upcoming.slice(0, maxShows).map((item) => item.slot);
 }
 
-function formatTimeUntil(program: Program): string {
+function formatTimeUntil(slot: ProgramDaySlot): string {
   const now = new Date();
-  const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  const currentDay = days[now.getDay()];
-  const currentHour = now.getHours();
-  const currentMinute = now.getMinutes();
-  const currentTimeInMinutes = currentHour * 60 + currentMinute;
+  const currentDay = DAYS[now.getDay()];
+  const currentTimeInMinutes = now.getHours() * 60 + now.getMinutes();
 
-  const startTime = parseTimeString(program.startTime);
-  if (!startTime) return '';
+  const startMin = parseTimeToMinutes(slot.program.startTime);
+  if (startMin === null) return "";
 
-  // Check if it's today
-  if (isDayMatch(startTime.day, currentDay)) {
-    const startTimeInMinutes = startTime.hour * 60 + startTime.minute;
-    const minutesUntil = startTimeInMinutes - currentTimeInMinutes;
-    
+  if (isDayMatch(slot.day, currentDay)) {
+    const minutesUntil = startMin - currentTimeInMinutes;
     if (minutesUntil > 0 && minutesUntil < 60) {
-      return `Starting in ${minutesUntil} minute${minutesUntil !== 1 ? 's' : ''}`;
-    } else if (minutesUntil >= 60) {
+      return `Starting in ${minutesUntil} minute${minutesUntil !== 1 ? "s" : ""}`;
+    }
+    if (minutesUntil >= 60) {
       const hours = Math.floor(minutesUntil / 60);
       const minutes = minutesUntil % 60;
-      if (minutes === 0) {
-        return `Starting in ${hours} hour${hours !== 1 ? 's' : ''}`;
-      }
+      if (minutes === 0)
+        return `Starting in ${hours} hour${hours !== 1 ? "s" : ""}`;
       return `Starting in ${hours}h ${minutes}m`;
     }
   }
 
-  // For future days, show the day
-  const programDay = startTime.day;
-  if (programDay === 'Any' || programDay.toLowerCase() === 'daily') {
-    return 'Coming up soon';
-  }
-  
-  return `Coming up ${programDay}`;
+  const d = slot.day.trim();
+  if (d.toLowerCase() === "daily" || d.toLowerCase() === "any")
+    return "Coming up soon";
+  return `Coming up ${d}`;
 }
 
 export default function UpcomingShows() {
-  const { data: programs, isLoading } = useGetProgramSchedule();
+  const { data: slots, isLoading } = useGetProgramSchedule();
 
   if (isLoading) {
     return (
@@ -185,7 +145,7 @@ export default function UpcomingShows() {
     );
   }
 
-  const upcomingShows = programs ? getUpcomingShows(programs, 2) : [];
+  const upcomingShows = slots ? getUpcomingShows(slots, 2) : [];
 
   if (upcomingShows.length === 0) {
     return (
@@ -218,28 +178,38 @@ export default function UpcomingShows() {
             📅 Upcoming Shows
           </h3>
         </div>
-        
+
         <div className="space-y-4">
-          {upcomingShows.map((show, index) => (
+          {upcomingShows.map((slot, index) => (
             <div
-              key={`${show.name}-${index}`}
+              key={`${slot.program.name}-${slot.day}-${index}`}
               className="p-4 rounded-lg bg-gradient-to-r from-christmas-gold/10 to-christmas-red/10 border border-christmas-gold/30 transition-all duration-300 hover:shadow-md animate-fade-in"
               style={{ animationDelay: `${index * 100}ms` }}
             >
-              <div className="flex items-start justify-between gap-3 mb-2">
+              <div className="flex items-start justify-between gap-3 mb-1">
                 <h4 className="text-lg font-bold text-christmas-dark font-christmas flex-1">
-                  {show.name}
+                  {slot.program.name}
                 </h4>
                 <span className="text-xs font-medium text-christmas-red bg-christmas-gold/20 px-2 py-1 rounded-full whitespace-nowrap">
-                  {formatTimeUntil(show)}
+                  {formatTimeUntil(slot)}
                 </span>
               </div>
+              <p className="text-xs font-semibold text-gray-500 mb-1">
+                {slot.day}
+              </p>
               <p className="text-sm text-gray-600 mb-2">
-                {show.startTime} - {show.endTime}
+                {slot.program.startTime} - {slot.program.endTime}
               </p>
-              <p className="text-sm text-gray-700 leading-relaxed">
-                {show.description}
-              </p>
+              <div className="max-h-20 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-christmas-gold scrollbar-track-gray-100">
+                <p className="text-sm text-gray-700 leading-relaxed">
+                  {slot.program.description}
+                </p>
+              </div>
+              {slot.program.bio && (
+                <p className="text-sm text-gray-500 italic mt-2 pt-2 border-t border-christmas-gold/20 leading-relaxed">
+                  {slot.program.bio}
+                </p>
+              )}
             </div>
           ))}
         </div>

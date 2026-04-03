@@ -89,6 +89,10 @@ export class ExternalBlob {
         return this;
     }
 }
+export interface _CaffeineStorageRefillResult {
+    success?: boolean;
+    topped_up_amount?: bigint;
+}
 export interface NowPlaying {
     title: string;
     artist: string;
@@ -112,6 +116,7 @@ export interface _CaffeineStorageCreateCertificateResult {
     blob_hash: string;
 }
 export interface ThemeSettings {
+    showNewsFeed: boolean;
     primaryColor: TailwindColor;
     showCountdown: boolean;
     accentColor: TailwindColor;
@@ -129,6 +134,7 @@ export interface StationInformation {
     description: string;
 }
 export interface Program {
+    bio: string;
     startTime: string;
     endTime: string;
     name: string;
@@ -150,15 +156,25 @@ export interface OnAirOverride {
     endTime: Time;
     description: string;
 }
+export interface ProgramDaySlot {
+    day: string;
+    program: Program;
+}
 export interface UserProfile {
     name: string;
 }
-export interface _CaffeineStorageRefillResult {
-    success?: boolean;
-    topped_up_amount?: bigint;
+export interface BlogPost {
+    id: string;
+    title: string;
+    content: string;
+    author: string;
+    createdAt: Time;
+    published: boolean;
 }
 export enum BackgroundImage {
+    christmasLights = "christmasLights",
     festiveTree = "festiveTree",
+    holidayDecorations = "holidayDecorations",
     twinklingLights = "twinklingLights",
     snowyVillage = "snowyVillage"
 }
@@ -168,6 +184,7 @@ export enum TailwindColor {
     gold = "gold",
     purple = "purple",
     green = "green",
+    silver = "silver",
     brown = "brown",
     white = "white"
 }
@@ -184,21 +201,22 @@ export interface backendInterface {
     _caffeineStorageRefillCashier(refillInformation: _CaffeineStorageRefillInformation | null): Promise<_CaffeineStorageRefillResult>;
     _caffeineStorageUpdateGatewayPrincipals(): Promise<void>;
     _initializeAccessControlWithSecret(userSecret: string): Promise<void>;
-    addCustomProgram(name: string, description: string, startTime: string, endTime: string): Promise<void>;
+    addCustomProgram(name: string, description: string, bio: string, startTime: string, endTime: string, days: Array<string>): Promise<void>;
     addDJProfile(name: string, bio: string, photo: ExternalBlob): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     clearNowPlaying(): Promise<void>;
     clearOnAirOverride(): Promise<void>;
     clearSongRequests(): Promise<void>;
     deleteDJProfile(name: string): Promise<void>;
-    deleteProgram(name: string): Promise<void>;
+    deleteProgram(name: string, day: string): Promise<void>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
     getDJProfiles(): Promise<Array<DJProfile>>;
     getLastUpdateResult(): Promise<LastUpdateResult | null>;
     getNowPlaying(): Promise<NowPlaying | null>;
     getOnAirOverride(): Promise<OnAirOverride | null>;
-    getProgramSchedule(): Promise<Array<Program>>;
+    getProgramSchedule(): Promise<Array<[string, Array<ProgramDaySlot>]>>;
+    getProgramsForDay(day: string): Promise<Array<Program>>;
     getSongRequests(): Promise<Array<SongRequest>>;
     getStationInformation(): Promise<StationInformation | null>;
     getThemeSettings(): Promise<ThemeSettings>;
@@ -213,10 +231,17 @@ export interface backendInterface {
     submitSongRequest(songRequest: SongRequest): Promise<void>;
     updateDJProfile(name: string, bio: string, photo: ExternalBlob): Promise<void>;
     updateNowPlaying(title: string, artist: string): Promise<void>;
-    updateProgram(name: string, description: string, startTime: string, endTime: string): Promise<void>;
+    updateProgram(name: string, description: string, bio: string, startTime: string, endTime: string, oldDay: string, newDay: string): Promise<void>;
     updateStationInformation(stationInfo: StationInformation): Promise<void>;
-    updateThemeSettings(showCountdown: boolean, snowEnabled: boolean, backgroundImage: BackgroundImage, primaryColor: TailwindColor, accentColor: TailwindColor): Promise<void>;
+    updateThemeSettings(showCountdown: boolean, showNewsFeed: boolean, snowEnabled: boolean, backgroundImage: BackgroundImage, primaryColor: TailwindColor, accentColor: TailwindColor): Promise<void>;
     updateWeatherData(newWeatherData: WeatherData): Promise<void>;
+    createBlogPost(title: string, content: string, author: string): Promise<string>;
+    deleteBlogPost(id: string): Promise<void>;
+    getAllBlogPosts(): Promise<Array<BlogPost>>;
+    getBlogPosts(): Promise<Array<BlogPost>>;
+    publishBlogPost(id: string): Promise<void>;
+    unpublishBlogPost(id: string): Promise<void>;
+    updateBlogPost(id: string, title: string, content: string, author: string): Promise<void>;
 }
 import type { BackgroundImage as _BackgroundImage, DJProfile as _DJProfile, ExternalBlob as _ExternalBlob, LastUpdateResult as _LastUpdateResult, NowPlaying as _NowPlaying, OnAirOverride as _OnAirOverride, StationInformation as _StationInformation, TailwindColor as _TailwindColor, ThemeSettings as _ThemeSettings, UserProfile as _UserProfile, UserRole as _UserRole, WeatherData as _WeatherData, _CaffeineStorageRefillInformation as __CaffeineStorageRefillInformation, _CaffeineStorageRefillResult as __CaffeineStorageRefillResult } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
@@ -319,17 +344,17 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async addCustomProgram(arg0: string, arg1: string, arg2: string, arg3: string): Promise<void> {
+    async addCustomProgram(arg0: string, arg1: string, arg2: string, arg3: string, arg4: string, arg5: Array<string>): Promise<void> {
         if (this.processError) {
             try {
-                const result = await this.actor.addCustomProgram(arg0, arg1, arg2, arg3);
+                const result = await this.actor.addCustomProgram(arg0, arg1, arg2, arg3, arg4, arg5);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.addCustomProgram(arg0, arg1, arg2, arg3);
+            const result = await this.actor.addCustomProgram(arg0, arg1, arg2, arg3, arg4, arg5);
             return result;
         }
     }
@@ -417,17 +442,17 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async deleteProgram(arg0: string): Promise<void> {
+    async deleteProgram(arg0: string, arg1: string): Promise<void> {
         if (this.processError) {
             try {
-                const result = await this.actor.deleteProgram(arg0);
+                const result = await this.actor.deleteProgram(arg0, arg1);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.deleteProgram(arg0);
+            const result = await this.actor.deleteProgram(arg0, arg1);
             return result;
         }
     }
@@ -515,7 +540,7 @@ export class Backend implements backendInterface {
             return from_candid_opt_n20(this._uploadFile, this._downloadFile, result);
         }
     }
-    async getProgramSchedule(): Promise<Array<Program>> {
+    async getProgramSchedule(): Promise<Array<[string, Array<ProgramDaySlot>]>> {
         if (this.processError) {
             try {
                 const result = await this.actor.getProgramSchedule();
@@ -526,6 +551,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.getProgramSchedule();
+            return result;
+        }
+    }
+    async getProgramsForDay(arg0: string): Promise<Array<Program>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getProgramsForDay(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getProgramsForDay(arg0);
             return result;
         }
     }
@@ -725,17 +764,17 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async updateProgram(arg0: string, arg1: string, arg2: string, arg3: string): Promise<void> {
+    async updateProgram(arg0: string, arg1: string, arg2: string, arg3: string, arg4: string, arg5: string, arg6: string): Promise<void> {
         if (this.processError) {
             try {
-                const result = await this.actor.updateProgram(arg0, arg1, arg2, arg3);
+                const result = await this.actor.updateProgram(arg0, arg1, arg2, arg3, arg4, arg5, arg6);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.updateProgram(arg0, arg1, arg2, arg3);
+            const result = await this.actor.updateProgram(arg0, arg1, arg2, arg3, arg4, arg5, arg6);
             return result;
         }
     }
@@ -753,17 +792,17 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async updateThemeSettings(arg0: boolean, arg1: boolean, arg2: BackgroundImage, arg3: TailwindColor, arg4: TailwindColor): Promise<void> {
+    async updateThemeSettings(arg0: boolean, arg1: boolean, arg2: boolean, arg3: BackgroundImage, arg4: TailwindColor, arg5: TailwindColor): Promise<void> {
         if (this.processError) {
             try {
-                const result = await this.actor.updateThemeSettings(arg0, arg1, to_candid_BackgroundImage_n29(this._uploadFile, this._downloadFile, arg2), to_candid_TailwindColor_n31(this._uploadFile, this._downloadFile, arg3), to_candid_TailwindColor_n31(this._uploadFile, this._downloadFile, arg4));
+                const result = await this.actor.updateThemeSettings(arg0, arg1, arg2, to_candid_BackgroundImage_n29(this._uploadFile, this._downloadFile, arg3), to_candid_TailwindColor_n31(this._uploadFile, this._downloadFile, arg4), to_candid_TailwindColor_n31(this._uploadFile, this._downloadFile, arg5));
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.updateThemeSettings(arg0, arg1, to_candid_BackgroundImage_n29(this._uploadFile, this._downloadFile, arg2), to_candid_TailwindColor_n31(this._uploadFile, this._downloadFile, arg3), to_candid_TailwindColor_n31(this._uploadFile, this._downloadFile, arg4));
+            const result = await this.actor.updateThemeSettings(arg0, arg1, arg2, to_candid_BackgroundImage_n29(this._uploadFile, this._downloadFile, arg3), to_candid_TailwindColor_n31(this._uploadFile, this._downloadFile, arg4), to_candid_TailwindColor_n31(this._uploadFile, this._downloadFile, arg5));
             return result;
         }
     }
@@ -778,6 +817,104 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.updateWeatherData(arg0);
+            return result;
+        }
+    }
+    async createBlogPost(arg0: string, arg1: string, arg2: string): Promise<string> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.createBlogPost(arg0, arg1, arg2);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.createBlogPost(arg0, arg1, arg2);
+            return result;
+        }
+    }
+    async deleteBlogPost(arg0: string): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.deleteBlogPost(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.deleteBlogPost(arg0);
+            return result;
+        }
+    }
+    async getAllBlogPosts(): Promise<Array<BlogPost>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getAllBlogPosts();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getAllBlogPosts();
+            return result;
+        }
+    }
+    async getBlogPosts(): Promise<Array<BlogPost>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getBlogPosts();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getBlogPosts();
+            return result;
+        }
+    }
+    async publishBlogPost(arg0: string): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.publishBlogPost(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.publishBlogPost(arg0);
+            return result;
+        }
+    }
+    async unpublishBlogPost(arg0: string): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.unpublishBlogPost(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.unpublishBlogPost(arg0);
+            return result;
+        }
+    }
+    async updateBlogPost(arg0: string, arg1: string, arg2: string, arg3: string): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.updateBlogPost(arg0, arg1, arg2, arg3);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.updateBlogPost(arg0, arg1, arg2, arg3);
             return result;
         }
     }
@@ -843,12 +980,14 @@ async function from_candid_record_n16(_uploadFile: (file: ExternalBlob) => Promi
     };
 }
 function from_candid_record_n23(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    showNewsFeed: boolean;
     primaryColor: _TailwindColor;
     showCountdown: boolean;
     accentColor: _TailwindColor;
     backgroundImage: _BackgroundImage;
     snowEnabled: boolean;
 }): {
+    showNewsFeed: boolean;
     primaryColor: TailwindColor;
     showCountdown: boolean;
     accentColor: TailwindColor;
@@ -856,6 +995,7 @@ function from_candid_record_n23(_uploadFile: (file: ExternalBlob) => Promise<Uin
     snowEnabled: boolean;
 } {
     return {
+        showNewsFeed: value.showNewsFeed,
         primaryColor: from_candid_TailwindColor_n24(_uploadFile, _downloadFile, value.primaryColor),
         showCountdown: value.showCountdown,
         accentColor: from_candid_TailwindColor_n24(_uploadFile, _downloadFile, value.accentColor),
@@ -895,20 +1035,26 @@ function from_candid_variant_n25(_uploadFile: (file: ExternalBlob) => Promise<Ui
 } | {
     green: null;
 } | {
+    silver: null;
+} | {
     brown: null;
 } | {
     white: null;
 }): TailwindColor {
-    return "red" in value ? TailwindColor.red : "blue" in value ? TailwindColor.blue : "gold" in value ? TailwindColor.gold : "purple" in value ? TailwindColor.purple : "green" in value ? TailwindColor.green : "brown" in value ? TailwindColor.brown : "white" in value ? TailwindColor.white : value;
+    return "red" in value ? TailwindColor.red : "blue" in value ? TailwindColor.blue : "gold" in value ? TailwindColor.gold : "purple" in value ? TailwindColor.purple : "green" in value ? TailwindColor.green : "silver" in value ? TailwindColor.silver : "brown" in value ? TailwindColor.brown : "white" in value ? TailwindColor.white : value;
 }
 function from_candid_variant_n27(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    christmasLights: null;
+} | {
     festiveTree: null;
+} | {
+    holidayDecorations: null;
 } | {
     twinklingLights: null;
 } | {
     snowyVillage: null;
 }): BackgroundImage {
-    return "festiveTree" in value ? BackgroundImage.festiveTree : "twinklingLights" in value ? BackgroundImage.twinklingLights : "snowyVillage" in value ? BackgroundImage.snowyVillage : value;
+    return "christmasLights" in value ? BackgroundImage.christmasLights : "festiveTree" in value ? BackgroundImage.festiveTree : "holidayDecorations" in value ? BackgroundImage.holidayDecorations : "twinklingLights" in value ? BackgroundImage.twinklingLights : "snowyVillage" in value ? BackgroundImage.snowyVillage : value;
 }
 async function from_candid_vec_n14(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_DJProfile>): Promise<Array<DJProfile>> {
     return await Promise.all(value.map(async (x)=>await from_candid_DJProfile_n15(_uploadFile, _downloadFile, x)));
@@ -956,14 +1102,22 @@ function to_candid_variant_n10(_uploadFile: (file: ExternalBlob) => Promise<Uint
     } : value;
 }
 function to_candid_variant_n30(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: BackgroundImage): {
+    christmasLights: null;
+} | {
     festiveTree: null;
+} | {
+    holidayDecorations: null;
 } | {
     twinklingLights: null;
 } | {
     snowyVillage: null;
 } {
-    return value == BackgroundImage.festiveTree ? {
+    return value == BackgroundImage.christmasLights ? {
+        christmasLights: null
+    } : value == BackgroundImage.festiveTree ? {
         festiveTree: null
+    } : value == BackgroundImage.holidayDecorations ? {
+        holidayDecorations: null
     } : value == BackgroundImage.twinklingLights ? {
         twinklingLights: null
     } : value == BackgroundImage.snowyVillage ? {
@@ -981,6 +1135,8 @@ function to_candid_variant_n32(_uploadFile: (file: ExternalBlob) => Promise<Uint
 } | {
     green: null;
 } | {
+    silver: null;
+} | {
     brown: null;
 } | {
     white: null;
@@ -995,6 +1151,8 @@ function to_candid_variant_n32(_uploadFile: (file: ExternalBlob) => Promise<Uint
         purple: null
     } : value == TailwindColor.green ? {
         green: null
+    } : value == TailwindColor.silver ? {
+        silver: null
     } : value == TailwindColor.brown ? {
         brown: null
     } : value == TailwindColor.white ? {

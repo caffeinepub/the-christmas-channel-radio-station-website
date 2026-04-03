@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
 interface Snowflake {
   id: number;
@@ -38,12 +38,12 @@ export default function Snowflakes() {
     // Generate twinkling lights
     const twinkleLights: TwinkleLight[] = [];
     const colors = [
-      'oklch(0.52 0.22 25)', // red
-      'oklch(0.78 0.15 85)', // gold
-      'oklch(0.48 0.18 155)', // green
-      'oklch(0.95 0.05 85)', // white
+      "oklch(0.52 0.22 25)", // red
+      "oklch(0.78 0.15 85)", // gold
+      "oklch(0.48 0.18 155)", // green
+      "oklch(0.95 0.05 85)", // white
     ];
-    
+
     for (let i = 0; i < 40; i++) {
       twinkleLights.push({
         id: i,
@@ -87,8 +87,8 @@ export default function Snowflakes() {
               left: `${light.left}%`,
               top: `${light.top}%`,
               backgroundColor: light.color,
-              width: '4px',
-              height: '4px',
+              width: "4px",
+              height: "4px",
               boxShadow: `0 0 8px 2px ${light.color}`,
               animationDelay: `${light.delay}s`,
               animationDuration: `${light.duration}s`,

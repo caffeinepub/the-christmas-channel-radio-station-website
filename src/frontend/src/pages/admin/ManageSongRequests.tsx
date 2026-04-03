@@ -1,17 +1,3 @@
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Trash2, Music, Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
-import ProtectedRoute from '../../components/ProtectedRoute';
-import { useGetSongRequests, useClearSongRequests } from '../../hooks/useQueries';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,7 +8,24 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Loader2, Music, Trash2 } from "lucide-react";
+import { toast } from "sonner";
+import ProtectedRoute from "../../components/ProtectedRoute";
+import {
+  useClearSongRequests,
+  useGetSongRequests,
+} from "../../hooks/useQueries";
 
 export default function ManageSongRequests() {
   const { data: requests = [], isLoading } = useGetSongRequests();
@@ -31,10 +34,10 @@ export default function ManageSongRequests() {
   const handleClearAll = async () => {
     try {
       await clearRequests.mutateAsync();
-      toast.success('All requests cleared successfully!');
-    } catch (error) {
-      toast.error('Failed to clear requests', {
-        description: 'Please try again later.',
+      toast.success("All requests cleared successfully!");
+    } catch (_e) {
+      toast.error("Failed to clear requests", {
+        description: "Please try again later.",
       });
     }
   };
@@ -76,7 +79,8 @@ export default function ManageSongRequests() {
                 <AlertDialogHeader>
                   <AlertDialogTitle>Clear All Requests?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    This will permanently delete all {requests.length} song request(s). This action cannot be undone.
+                    This will permanently delete all {requests.length} song
+                    request(s). This action cannot be undone.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -118,15 +122,21 @@ export default function ManageSongRequests() {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-christmas-gold/20 hover:bg-christmas-gold/30">
-                    <TableHead className="font-bold text-christmas-dark">Listener Name</TableHead>
-                    <TableHead className="font-bold text-christmas-dark">Song Title</TableHead>
-                    <TableHead className="font-bold text-christmas-dark">Message</TableHead>
+                    <TableHead className="font-bold text-christmas-dark">
+                      Listener Name
+                    </TableHead>
+                    <TableHead className="font-bold text-christmas-dark">
+                      Song Title
+                    </TableHead>
+                    <TableHead className="font-bold text-christmas-dark">
+                      Message
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {requests.map((request, index) => (
+                  {requests.map((request) => (
                     <TableRow
-                      key={index}
+                      key={`${request.name}-${request.songTitle}-${request.message}`}
                       className="hover:bg-christmas-gold/10 transition-colors"
                     >
                       <TableCell className="font-medium text-christmas-dark">
@@ -136,7 +146,11 @@ export default function ManageSongRequests() {
                         {request.songTitle}
                       </TableCell>
                       <TableCell className="text-gray-600 max-w-md">
-                        {request.message || <span className="italic text-gray-400">No message</span>}
+                        {request.message || (
+                          <span className="italic text-gray-400">
+                            No message
+                          </span>
+                        )}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -148,7 +162,12 @@ export default function ManageSongRequests() {
 
         {requests.length > 0 && (
           <div className="mt-6 text-center text-gray-600">
-            <p>Total requests: <span className="font-bold text-christmas-dark">{requests.length}</span></p>
+            <p>
+              Total requests:{" "}
+              <span className="font-bold text-christmas-dark">
+                {requests.length}
+              </span>
+            </p>
           </div>
         )}
       </div>

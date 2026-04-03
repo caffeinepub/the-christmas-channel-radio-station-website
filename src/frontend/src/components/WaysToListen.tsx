@@ -1,56 +1,57 @@
-import { Globe, Radio, Smartphone, Music, Headphones } from 'lucide-react';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Globe, Headphones, Music, Radio, Smartphone } from "lucide-react";
 
 export default function WaysToListen() {
   const listeningMethods = [
     {
       icon: Globe,
-      title: 'Website',
-      description: 'Listen directly on our website with the embedded player above',
-      link: '#',
-      color: 'christmas-red',
-      action: 'Scroll Up',
+      title: "Website",
+      description:
+        "Listen directly on our website with the embedded player above",
+      link: "#",
+      color: "christmas-red",
+      action: "Scroll Up",
     },
     {
       icon: Radio,
-      title: 'Live365 App',
-      description: 'Download the Live365 app and find The Christmas Channel',
-      link: 'https://live365.com/station/The-Christmas-Channel-a76054',
-      color: 'christmas-green',
-      action: 'Open Live365',
+      title: "Live365 App",
+      description: "Download the Live365 app and find The Christmas Channel",
+      link: "https://live365.com/station/The-Christmas-Channel-a76054",
+      color: "christmas-green",
+      action: "Open Live365",
     },
     {
       icon: Smartphone,
-      title: 'Radioline App',
-      description: 'Stream us on the Radioline app for iOS and Android',
-      link: 'https://radioline.co/',
-      color: 'christmas-gold',
-      action: 'Open Radioline',
+      title: "Radioline App",
+      description: "Stream us on the Radioline app for iOS and Android",
+      link: "https://radioline.co/",
+      color: "christmas-gold",
+      action: "Open Radioline",
     },
     {
       icon: Music,
-      title: 'Online Radio Box',
-      description: 'Find us on Online Radio Box for easy streaming',
-      link: 'https://onlineradiobox.com/',
-      color: 'christmas-red',
-      action: 'Open Radio Box',
+      title: "Online Radio Box",
+      description: "Find us on Online Radio Box for easy streaming",
+      link: "https://onlineradiobox.com/",
+      color: "christmas-red",
+      action: "Open Radio Box",
     },
     {
       icon: Headphones,
-      title: 'Get Me Radio',
-      description: 'Listen to The Christmas Channel on Get Me Radio',
-      link: 'https://www.getmeradio.com/stations/thechristmaschannel-11457/?station_id=11457',
-      color: 'christmas-green',
-      action: 'Open Get Me Radio',
+      title: "Get Me Radio",
+      description: "Listen to The Christmas Channel on Get Me Radio",
+      link: "https://www.getmeradio.com/stations/thechristmaschannel-11457/?station_id=11457",
+      color: "christmas-green",
+      action: "Open Get Me Radio",
     },
   ];
 
   const handleClick = (link: string) => {
-    if (link === '#') {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (link === "#") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
-      window.open(link, '_blank', 'noopener,noreferrer');
+      window.open(link, "_blank", "noopener,noreferrer");
     }
   };
 
@@ -89,7 +90,9 @@ export default function WaysToListen() {
                   </p>
                   <Button
                     className={`bg-${method.color} hover:bg-${method.color}-dark text-white w-full shadow-md hover:shadow-lg transition-all ${
-                      method.color === 'christmas-gold' ? 'text-christmas-red' : ''
+                      method.color === "christmas-gold"
+                        ? "text-christmas-red"
+                        : ""
                     }`}
                     onClick={(e) => {
                       e.stopPropagation();

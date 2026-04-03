@@ -1,17 +1,29 @@
-import { useState } from 'react';
-import { Link } from '@tanstack/react-router';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import { ArrowLeft, Plus, Edit, Trash2, Upload } from 'lucide-react';
-import { toast } from 'sonner';
-import { useGetDJProfiles, useAddDJProfile, useUpdateDJProfile, useDeleteDJProfile } from '../../hooks/useQueries';
-import { ExternalBlob } from '../../backend';
-import type { DJProfile } from '../../backend';
-import ProtectedRoute from '../../components/ProtectedRoute';
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Link } from "@tanstack/react-router";
+import { ArrowLeft, Edit, Plus, Trash2, Upload } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+import { ExternalBlob } from "../../backend";
+import type { DJProfile } from "../../backend";
+import ProtectedRoute from "../../components/ProtectedRoute";
+import {
+  useAddDJProfile,
+  useDeleteDJProfile,
+  useGetDJProfiles,
+  useUpdateDJProfile,
+} from "../../hooks/useQueries";
 
 export default function ManageDJs() {
   const { data: djProfiles = [], isLoading } = useGetDJProfiles();
@@ -25,10 +37,10 @@ export default function ManageDJs() {
   const [djToDelete, setDjToDelete] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
-    name: '',
-    bio: '',
+    name: "",
+    bio: "",
     photoFile: null as File | null,
-    photoUrl: '',
+    photoUrl: "",
   });
 
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -44,7 +56,7 @@ export default function ManageDJs() {
       });
     } else {
       setEditingDJ(null);
-      setFormData({ name: '', bio: '', photoFile: null, photoUrl: '' });
+      setFormData({ name: "", bio: "", photoFile: null, photoUrl: "" });
     }
     setUploadProgress(0);
     setDialogOpen(true);
@@ -53,8 +65,8 @@ export default function ManageDJs() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (!file.type.startsWith('image/')) {
-        toast.error('Please select an image file');
+      if (!file.type.startsWith("image/")) {
+        toast.error("Please select an image file");
         return;
       }
       setFormData({ ...formData, photoFile: file });
@@ -63,9 +75,9 @@ export default function ManageDJs() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.name.trim() || !formData.bio.trim()) {
-      toast.error('Please fill in all fields');
+      toast.error("Please fill in all fields");
       return;
     }
 
@@ -75,13 +87,15 @@ export default function ManageDJs() {
       if (formData.photoFile) {
         const arrayBuffer = await formData.photoFile.arrayBuffer();
         const uint8Array = new Uint8Array(arrayBuffer);
-        photoBlob = ExternalBlob.fromBytes(uint8Array).withUploadProgress((percentage) => {
-          setUploadProgress(percentage);
-        });
+        photoBlob = ExternalBlob.fromBytes(uint8Array).withUploadProgress(
+          (percentage) => {
+            setUploadProgress(percentage);
+          },
+        );
       } else if (editingDJ) {
         photoBlob = editingDJ.photoUrl;
       } else {
-        toast.error('Please select a photo');
+        toast.error("Please select a photo");
         return;
       }
 
@@ -91,22 +105,22 @@ export default function ManageDJs() {
           bio: formData.bio.trim(),
           photo: photoBlob,
         });
-        toast.success('DJ profile updated successfully!');
+        toast.success("DJ profile updated successfully!");
       } else {
         await addDJ.mutateAsync({
           name: formData.name.trim(),
           bio: formData.bio.trim(),
           photo: photoBlob,
         });
-        toast.success('DJ profile added successfully!');
+        toast.success("DJ profile added successfully!");
       }
 
       setDialogOpen(false);
-      setFormData({ name: '', bio: '', photoFile: null, photoUrl: '' });
+      setFormData({ name: "", bio: "", photoFile: null, photoUrl: "" });
       setUploadProgress(0);
     } catch (error: any) {
-      console.error('Error saving DJ:', error);
-      toast.error(error.message || 'Failed to save DJ profile');
+      console.error("Error saving DJ:", error);
+      toast.error(error.message || "Failed to save DJ profile");
     }
   };
 
@@ -115,12 +129,12 @@ export default function ManageDJs() {
 
     try {
       await deleteDJ.mutateAsync(djToDelete);
-      toast.success('DJ profile deleted successfully!');
+      toast.success("DJ profile deleted successfully!");
       setDeleteDialogOpen(false);
       setDjToDelete(null);
     } catch (error: any) {
-      console.error('Error deleting DJ:', error);
-      toast.error(error.message || 'Failed to delete DJ profile');
+      console.error("Error deleting DJ:", error);
+      toast.error(error.message || "Failed to delete DJ profile");
     }
   };
 
@@ -129,7 +143,11 @@ export default function ManageDJs() {
       <div className="container mx-auto px-4 py-12">
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <Button asChild variant="ghost" className="mb-4 text-christmas-red hover:text-christmas-red-dark">
+            <Button
+              asChild
+              variant="ghost"
+              className="mb-4 text-christmas-red hover:text-christmas-red-dark"
+            >
               <Link to="/admin">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Dashboard
@@ -140,7 +158,10 @@ export default function ManageDJs() {
             </h1>
             <p className="text-gray-600">Add, edit, or remove DJ profiles</p>
           </div>
-          <Button onClick={() => handleOpenDialog()} className="bg-christmas-red hover:bg-christmas-red-dark">
+          <Button
+            onClick={() => handleOpenDialog()}
+            className="bg-christmas-red hover:bg-christmas-red-dark"
+          >
             <Plus className="h-4 w-4 mr-2" />
             Add DJ
           </Button>
@@ -153,8 +174,13 @@ export default function ManageDJs() {
           </div>
         ) : djProfiles.length === 0 ? (
           <Card className="bg-white/95 backdrop-blur-sm border-christmas-gold border-2 p-12 text-center">
-            <p className="text-gray-600 mb-4">No DJ profiles yet. Add your first DJ!</p>
-            <Button onClick={() => handleOpenDialog()} className="bg-christmas-red hover:bg-christmas-red-dark">
+            <p className="text-gray-600 mb-4">
+              No DJ profiles yet. Add your first DJ!
+            </p>
+            <Button
+              onClick={() => handleOpenDialog()}
+              className="bg-christmas-red hover:bg-christmas-red-dark"
+            >
               <Plus className="h-4 w-4 mr-2" />
               Add DJ
             </Button>
@@ -162,7 +188,10 @@ export default function ManageDJs() {
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {djProfiles.map((dj) => (
-              <Card key={dj.name} className="bg-white/95 backdrop-blur-sm border-christmas-gold border-2 hover:shadow-xl transition-shadow">
+              <Card
+                key={dj.name}
+                className="bg-white/95 backdrop-blur-sm border-christmas-gold border-2 hover:shadow-xl transition-shadow"
+              >
                 <div className="p-6">
                   <img
                     src={dj.photoUrl.getDirectURL()}
@@ -207,10 +236,12 @@ export default function ManageDJs() {
           <DialogContent className="sm:max-w-lg bg-white border-christmas-gold border-2">
             <DialogHeader>
               <DialogTitle className="text-2xl font-christmas text-christmas-red">
-                {editingDJ ? 'Edit DJ Profile' : 'Add New DJ'}
+                {editingDJ ? "Edit DJ Profile" : "Add New DJ"}
               </DialogTitle>
               <DialogDescription>
-                {editingDJ ? 'Update the DJ profile information' : 'Add a new DJ to your station'}
+                {editingDJ
+                  ? "Update the DJ profile information"
+                  : "Add a new DJ to your station"}
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4 mt-4">
@@ -219,7 +250,9 @@ export default function ManageDJs() {
                 <Input
                   id="name"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
                   placeholder="Enter DJ name"
                   disabled={!!editingDJ}
                   className="border-christmas-gold"
@@ -230,7 +263,9 @@ export default function ManageDJs() {
                 <Textarea
                   id="bio"
                   value={formData.bio}
-                  onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, bio: e.target.value })
+                  }
                   placeholder="Enter DJ bio"
                   rows={4}
                   className="border-christmas-gold"
@@ -247,7 +282,11 @@ export default function ManageDJs() {
                     className="border-christmas-gold"
                   />
                   {formData.photoUrl && !formData.photoFile && (
-                    <img src={formData.photoUrl} alt="Current" className="h-12 w-12 rounded object-cover" />
+                    <img
+                      src={formData.photoUrl}
+                      alt="Current"
+                      className="h-12 w-12 rounded object-cover"
+                    />
                   )}
                 </div>
                 {uploadProgress > 0 && uploadProgress < 100 && (
@@ -260,7 +299,11 @@ export default function ManageDJs() {
                 )}
               </div>
               <DialogFooter>
-                <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setDialogOpen(false)}
+                >
                   Cancel
                 </Button>
                 <Button
@@ -268,7 +311,11 @@ export default function ManageDJs() {
                   disabled={addDJ.isPending || updateDJ.isPending}
                   className="bg-christmas-red hover:bg-christmas-red-dark"
                 >
-                  {addDJ.isPending || updateDJ.isPending ? 'Saving...' : editingDJ ? 'Update' : 'Add'}
+                  {addDJ.isPending || updateDJ.isPending
+                    ? "Saving..."
+                    : editingDJ
+                      ? "Update"
+                      : "Add"}
                 </Button>
               </DialogFooter>
             </form>
@@ -283,11 +330,15 @@ export default function ManageDJs() {
                 Delete DJ Profile
               </DialogTitle>
               <DialogDescription>
-                Are you sure you want to delete this DJ profile? This action cannot be undone.
+                Are you sure you want to delete this DJ profile? This action
+                cannot be undone.
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
+              <Button
+                variant="outline"
+                onClick={() => setDeleteDialogOpen(false)}
+              >
                 Cancel
               </Button>
               <Button
@@ -295,7 +346,7 @@ export default function ManageDJs() {
                 disabled={deleteDJ.isPending}
                 className="bg-christmas-red hover:bg-christmas-red-dark"
               >
-                {deleteDJ.isPending ? 'Deleting...' : 'Delete'}
+                {deleteDJ.isPending ? "Deleting..." : "Delete"}
               </Button>
             </DialogFooter>
           </DialogContent>

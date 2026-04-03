@@ -1,8 +1,8 @@
-import { useState, useRef, useEffect } from 'react';
-import { Play, Pause, Volume2, VolumeX } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Slider } from '@/components/ui/slider';
-import { Card } from '@/components/ui/card';
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Slider } from "@/components/ui/slider";
+import { Pause, Play, Volume2, VolumeX } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 export default function RadioPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -11,7 +11,7 @@ export default function RadioPlayer() {
   const audioRef = useRef<HTMLAudioElement>(null);
 
   // Placeholder stream URL - replace with actual stream URL when available
-  const streamUrl = 'https://stream.example.com/christmas-radio';
+  const streamUrl = "https://stream.example.com/christmas-radio";
 
   useEffect(() => {
     if (audioRef.current) {
@@ -25,7 +25,7 @@ export default function RadioPlayer() {
         audioRef.current.pause();
       } else {
         audioRef.current.play().catch((error) => {
-          console.error('Playback failed:', error);
+          console.error("Playback failed:", error);
         });
       }
       setIsPlaying(!isPlaying);
@@ -46,7 +46,11 @@ export default function RadioPlayer() {
             onClick={togglePlay}
             className="h-16 w-16 rounded-full bg-christmas-gold hover:bg-christmas-gold-light text-christmas-red shadow-lg transition-all hover:scale-110"
           >
-            {isPlaying ? <Pause className="h-8 w-8" /> : <Play className="h-8 w-8 ml-1" />}
+            {isPlaying ? (
+              <Pause className="h-8 w-8" />
+            ) : (
+              <Play className="h-8 w-8 ml-1" />
+            )}
           </Button>
 
           {/* Volume Controls */}
@@ -57,7 +61,11 @@ export default function RadioPlayer() {
               onClick={toggleMute}
               className="text-white hover:bg-white/10"
             >
-              {isMuted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
+              {isMuted ? (
+                <VolumeX className="h-5 w-5" />
+              ) : (
+                <Volume2 className="h-5 w-5" />
+              )}
             </Button>
             <Slider
               value={[isMuted ? 0 : volume]}
@@ -69,20 +77,26 @@ export default function RadioPlayer() {
               step={1}
               className="flex-1"
             />
-            <span className="text-white font-medium w-12 text-right">{isMuted ? 0 : volume}%</span>
+            <span className="text-white font-medium w-12 text-right">
+              {isMuted ? 0 : volume}%
+            </span>
           </div>
         </div>
 
         {/* Status */}
         <div className="mt-4 text-center">
           <p className="text-white/80 text-sm">
-            {isPlaying ? '🎵 Live Broadcasting' : 'Press play to start listening'}
+            {isPlaying
+              ? "🎵 Live Broadcasting"
+              : "Press play to start listening"}
           </p>
         </div>
       </div>
 
       {/* Hidden audio element */}
-      <audio ref={audioRef} src={streamUrl} preload="none" />
+      <audio ref={audioRef} src={streamUrl} preload="none">
+        <track kind="captions" />
+      </audio>
     </Card>
   );
 }

@@ -1,13 +1,17 @@
-import { useState, useEffect } from 'react';
-import { Link } from '@tanstack/react-router';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { ArrowLeft, Music, Trash2 } from 'lucide-react';
-import { toast } from 'sonner';
-import { useGetNowPlaying, useUpdateNowPlaying, useClearNowPlaying } from '../../hooks/useQueries';
-import ProtectedRoute from '../../components/ProtectedRoute';
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Link } from "@tanstack/react-router";
+import { ArrowLeft, Music, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import ProtectedRoute from "../../components/ProtectedRoute";
+import {
+  useClearNowPlaying,
+  useGetNowPlaying,
+  useUpdateNowPlaying,
+} from "../../hooks/useQueries";
 
 export default function ManageNowPlaying() {
   const { data: nowPlaying, isLoading } = useGetNowPlaying();
@@ -15,8 +19,8 @@ export default function ManageNowPlaying() {
   const clearNowPlaying = useClearNowPlaying();
 
   const [formData, setFormData] = useState({
-    title: '',
-    artist: '',
+    title: "",
+    artist: "",
   });
 
   useEffect(() => {
@@ -30,9 +34,9 @@ export default function ManageNowPlaying() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.title.trim() || !formData.artist.trim()) {
-      toast.error('Please fill in both title and artist');
+      toast.error("Please fill in both title and artist");
       return;
     }
 
@@ -41,21 +45,21 @@ export default function ManageNowPlaying() {
         title: formData.title.trim(),
         artist: formData.artist.trim(),
       });
-      toast.success('Now Playing updated successfully!');
+      toast.success("Now Playing updated successfully!");
     } catch (error: any) {
-      console.error('Error updating now playing:', error);
-      toast.error(error.message || 'Failed to update Now Playing');
+      console.error("Error updating now playing:", error);
+      toast.error(error.message || "Failed to update Now Playing");
     }
   };
 
   const handleClear = async () => {
     try {
       await clearNowPlaying.mutateAsync();
-      setFormData({ title: '', artist: '' });
-      toast.success('Now Playing cleared successfully!');
+      setFormData({ title: "", artist: "" });
+      toast.success("Now Playing cleared successfully!");
     } catch (error: any) {
-      console.error('Error clearing now playing:', error);
-      toast.error(error.message || 'Failed to clear Now Playing');
+      console.error("Error clearing now playing:", error);
+      toast.error(error.message || "Failed to clear Now Playing");
     }
   };
 
@@ -63,7 +67,11 @@ export default function ManageNowPlaying() {
     <ProtectedRoute>
       <div className="container mx-auto px-4 py-12">
         <div className="mb-8">
-          <Button asChild variant="ghost" className="mb-4 text-christmas-red hover:text-christmas-red-dark">
+          <Button
+            asChild
+            variant="ghost"
+            className="mb-4 text-christmas-red hover:text-christmas-red-dark"
+          >
             <Link to="/admin">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Dashboard
@@ -72,7 +80,9 @@ export default function ManageNowPlaying() {
           <h1 className="text-4xl font-bold text-christmas-dark mb-2 font-christmas">
             Update Now Playing
           </h1>
-          <p className="text-gray-600">Update the current song information in real-time</p>
+          <p className="text-gray-600">
+            Update the current song information in real-time
+          </p>
         </div>
 
         <div className="max-w-2xl mx-auto">
@@ -87,7 +97,11 @@ export default function ManageNowPlaying() {
                     Current Song
                   </h2>
                   <p className="text-gray-600">
-                    {isLoading ? 'Loading...' : nowPlaying ? `${nowPlaying.title} - ${nowPlaying.artist}` : 'No song currently playing'}
+                    {isLoading
+                      ? "Loading..."
+                      : nowPlaying
+                        ? `${nowPlaying.title} - ${nowPlaying.artist}`
+                        : "No song currently playing"}
                   </p>
                 </div>
               </div>
@@ -98,7 +112,9 @@ export default function ManageNowPlaying() {
                   <Input
                     id="title"
                     value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, title: e.target.value })
+                    }
                     placeholder="Enter song title"
                     className="border-christmas-gold"
                   />
@@ -108,7 +124,9 @@ export default function ManageNowPlaying() {
                   <Input
                     id="artist"
                     value={formData.artist}
-                    onChange={(e) => setFormData({ ...formData, artist: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, artist: e.target.value })
+                    }
                     placeholder="Enter artist name"
                     className="border-christmas-gold"
                   />
@@ -119,7 +137,9 @@ export default function ManageNowPlaying() {
                     disabled={updateNowPlaying.isPending}
                     className="flex-1 bg-christmas-gold hover:bg-christmas-gold-light text-christmas-red"
                   >
-                    {updateNowPlaying.isPending ? 'Updating...' : 'Update Now Playing'}
+                    {updateNowPlaying.isPending
+                      ? "Updating..."
+                      : "Update Now Playing"}
                   </Button>
                   <Button
                     type="button"
@@ -129,7 +149,7 @@ export default function ManageNowPlaying() {
                     className="border-christmas-red text-christmas-red hover:bg-christmas-red hover:text-white"
                   >
                     <Trash2 className="h-4 w-4 mr-2" />
-                    {clearNowPlaying.isPending ? 'Clearing...' : 'Clear'}
+                    {clearNowPlaying.isPending ? "Clearing..." : "Clear"}
                   </Button>
                 </div>
               </form>
@@ -144,7 +164,9 @@ export default function ManageNowPlaying() {
               <ul className="text-gray-600 space-y-2 text-sm">
                 <li>• Updates are reflected immediately on the live site</li>
                 <li>• Use "Clear" to remove the current song display</li>
-                <li>• Make sure to enter both title and artist for best results</li>
+                <li>
+                  • Make sure to enter both title and artist for best results
+                </li>
               </ul>
             </div>
           </Card>

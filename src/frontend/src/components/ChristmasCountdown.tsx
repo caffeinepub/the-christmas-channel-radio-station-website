@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
-import { Snowflake } from 'lucide-react';
-import { Card } from '@/components/ui/card';
+import { Card } from "@/components/ui/card";
+import { Snowflake } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface TimeRemaining {
   days: number;
@@ -21,10 +21,10 @@ export default function ChristmasCountdown() {
     const calculateTimeRemaining = () => {
       const now = new Date();
       const currentYear = now.getFullYear();
-      
+
       // Target is December 25th of the current year at midnight
       const christmasThisYear = new Date(currentYear, 11, 25, 0, 0, 0, 0);
-      
+
       const nowTime = now.getTime();
       const christmasTime = christmasThisYear.getTime();
       const difference = christmasTime - nowTime;
@@ -32,7 +32,9 @@ export default function ChristmasCountdown() {
       if (difference > 0) {
         setTimeRemaining({
           days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-          hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+          hours: Math.floor(
+            (difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+          ),
           minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
           seconds: Math.floor((difference % (1000 * 60)) / 1000),
         });
@@ -61,7 +63,7 @@ export default function ChristmasCountdown() {
           </h2>
           <Snowflake className="h-6 w-6 md:h-8 md:w-8 text-white animate-pulse" />
         </div>
-        
+
         <div className="grid grid-cols-4 gap-2 md:gap-4 mt-6">
           <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 md:p-4 border-2 border-christmas-gold">
             <div className="text-3xl md:text-5xl font-bold text-white font-christmas">
@@ -71,7 +73,7 @@ export default function ChristmasCountdown() {
               Days
             </div>
           </div>
-          
+
           <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 md:p-4 border-2 border-christmas-gold">
             <div className="text-3xl md:text-5xl font-bold text-white font-christmas">
               {timeRemaining.hours}
@@ -80,7 +82,7 @@ export default function ChristmasCountdown() {
               Hours
             </div>
           </div>
-          
+
           <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 md:p-4 border-2 border-christmas-gold">
             <div className="text-3xl md:text-5xl font-bold text-white font-christmas">
               {timeRemaining.minutes}
@@ -89,7 +91,7 @@ export default function ChristmasCountdown() {
               Minutes
             </div>
           </div>
-          
+
           <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 md:p-4 border-2 border-christmas-gold">
             <div className="text-3xl md:text-5xl font-bold text-white font-christmas">
               {timeRemaining.seconds}
@@ -99,7 +101,7 @@ export default function ChristmasCountdown() {
             </div>
           </div>
         </div>
-        
+
         <p className="mt-6 text-white text-sm md:text-base font-medium italic">
           ✨ The most wonderful time of the year is coming! ✨
         </p>

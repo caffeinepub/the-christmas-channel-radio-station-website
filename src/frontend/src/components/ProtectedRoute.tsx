@@ -1,9 +1,9 @@
-import { ReactNode } from 'react';
-import { useInternetIdentity } from '../hooks/useInternetIdentity';
-import { useIsCallerAdmin } from '../hooks/useQueries';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Shield, Lock } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Lock, Shield } from "lucide-react";
+import type { ReactNode } from "react";
+import { useInternetIdentity } from "../hooks/useInternetIdentity";
+import { useIsCallerAdmin } from "../hooks/useQueries";
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -14,7 +14,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { data: isAdmin, isLoading: adminLoading } = useIsCallerAdmin();
 
   const isAuthenticated = !!identity;
-  const isLoggingIn = loginStatus === 'logging-in';
+  const isLoggingIn = loginStatus === "logging-in";
 
   if (!isAuthenticated) {
     return (
@@ -37,7 +37,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
               disabled={isLoggingIn}
               className="w-full bg-christmas-red hover:bg-christmas-red-dark text-white"
             >
-              {isLoggingIn ? 'Logging in...' : 'Login with Internet Identity'}
+              {isLoggingIn ? "Logging in..." : "Login with Internet Identity"}
             </Button>
           </div>
         </Card>

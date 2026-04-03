@@ -1,7 +1,7 @@
-import { Music2 } from 'lucide-react';
-import { Card } from '@/components/ui/card';
-import { useGetNowPlaying } from '../hooks/useQueries';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Music2 } from "lucide-react";
+import { useGetNowPlaying } from "../hooks/useQueries";
 
 export default function NowPlaying() {
   const { data: nowPlaying, isLoading } = useGetNowPlaying();
@@ -42,7 +42,9 @@ export default function NowPlaying() {
                 <h3 className="text-2xl font-bold text-christmas-dark mt-1 font-christmas">
                   {nowPlaying.title}
                 </h3>
-                <p className="text-lg text-gray-600 mt-1">{nowPlaying.artist}</p>
+                <p className="text-lg text-gray-600 mt-1">
+                  {nowPlaying.artist}
+                </p>
               </>
             ) : (
               <p className="text-lg text-gray-500 mt-1 italic">
@@ -51,7 +53,7 @@ export default function NowPlaying() {
             )}
           </div>
         </div>
-        
+
         {/* Embedded Live365 Player */}
         <div className="mt-6 flex justify-center">
           <div className="w-full max-w-[450px] rounded-lg overflow-hidden border-2 border-christmas-gold/30 shadow-md">
@@ -69,4 +71,3 @@ export default function NowPlaying() {
     </Card>
   );
 }
-

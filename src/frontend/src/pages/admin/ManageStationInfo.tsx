@@ -1,23 +1,26 @@
-import { useState, useEffect } from 'react';
-import { Link } from '@tanstack/react-router';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { ArrowLeft, Save } from 'lucide-react';
-import { toast } from 'sonner';
-import { useGetStationInformation, useUpdateStationInformation } from '../../hooks/useQueries';
-import ProtectedRoute from '../../components/ProtectedRoute';
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Link } from "@tanstack/react-router";
+import { ArrowLeft, Save } from "lucide-react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import ProtectedRoute from "../../components/ProtectedRoute";
+import {
+  useGetStationInformation,
+  useUpdateStationInformation,
+} from "../../hooks/useQueries";
 
 export default function ManageStationInfo() {
   const { data: stationInfo, isLoading } = useGetStationInformation();
   const updateStationInfo = useUpdateStationInformation();
 
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    content: '',
+    title: "",
+    description: "",
+    content: "",
   });
 
   useEffect(() => {
@@ -34,7 +37,7 @@ export default function ManageStationInfo() {
     e.preventDefault();
 
     if (!formData.title.trim() || !formData.description.trim()) {
-      toast.error('Title and description are required');
+      toast.error("Title and description are required");
       return;
     }
 
@@ -44,10 +47,10 @@ export default function ManageStationInfo() {
         description: formData.description.trim(),
         content: formData.content.trim(),
       });
-      toast.success('Station information updated successfully!');
+      toast.success("Station information updated successfully!");
     } catch (error: any) {
-      console.error('Error updating station info:', error);
-      toast.error(error.message || 'Failed to update station information');
+      console.error("Error updating station info:", error);
+      toast.error(error.message || "Failed to update station information");
     }
   };
 
@@ -56,7 +59,11 @@ export default function ManageStationInfo() {
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
           <div className="mb-8">
-            <Button asChild variant="ghost" className="mb-4 text-christmas-red hover:text-christmas-red-dark">
+            <Button
+              asChild
+              variant="ghost"
+              className="mb-4 text-christmas-red hover:text-christmas-red-dark"
+            >
               <Link to="/admin">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Dashboard
@@ -65,7 +72,9 @@ export default function ManageStationInfo() {
             <h1 className="text-4xl font-bold text-christmas-dark mb-2 font-christmas">
               Manage Station Information
             </h1>
-            <p className="text-gray-600">Update the About Station section content</p>
+            <p className="text-gray-600">
+              Update the About Station section content
+            </p>
           </div>
 
           {isLoading ? (
@@ -78,29 +87,43 @@ export default function ManageStationInfo() {
               <div className="p-8">
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="space-y-2">
-                    <Label htmlFor="title" className="text-lg font-semibold text-christmas-dark">
+                    <Label
+                      htmlFor="title"
+                      className="text-lg font-semibold text-christmas-dark"
+                    >
                       Section Title
                     </Label>
                     <Input
                       id="title"
                       value={formData.title}
-                      onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, title: e.target.value })
+                      }
                       placeholder="e.g., About Our Station"
                       className="border-christmas-gold text-lg"
                     />
                     <p className="text-sm text-gray-500">
-                      This will be displayed as the heading of the About Station section
+                      This will be displayed as the heading of the About Station
+                      section
                     </p>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="description" className="text-lg font-semibold text-christmas-dark">
+                    <Label
+                      htmlFor="description"
+                      className="text-lg font-semibold text-christmas-dark"
+                    >
                       Short Description
                     </Label>
                     <Textarea
                       id="description"
                       value={formData.description}
-                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          description: e.target.value,
+                        })
+                      }
                       placeholder="A brief description or tagline"
                       rows={2}
                       className="border-christmas-gold"
@@ -111,19 +134,25 @@ export default function ManageStationInfo() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="content" className="text-lg font-semibold text-christmas-dark">
+                    <Label
+                      htmlFor="content"
+                      className="text-lg font-semibold text-christmas-dark"
+                    >
                       Main Content
                     </Label>
                     <Textarea
                       id="content"
                       value={formData.content}
-                      onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, content: e.target.value })
+                      }
                       placeholder="Enter the main content for the About Station section. You can use HTML for formatting."
                       rows={12}
                       className="border-christmas-gold font-mono text-sm"
                     />
                     <p className="text-sm text-gray-500">
-                      Main content for the section. Basic HTML tags are supported (p, strong, em, br, ul, ol, li, etc.)
+                      Main content for the section. Basic HTML tags are
+                      supported (p, strong, em, br, ul, ol, li, etc.)
                     </p>
                   </div>
 
@@ -134,13 +163,17 @@ export default function ManageStationInfo() {
                       className="bg-christmas-green hover:bg-christmas-green-dark flex-1"
                     >
                       <Save className="h-4 w-4 mr-2" />
-                      {updateStationInfo.isPending ? 'Saving...' : 'Save Changes'}
+                      {updateStationInfo.isPending
+                        ? "Saving..."
+                        : "Save Changes"}
                     </Button>
                   </div>
                 </form>
 
                 {/* Preview Section */}
-                {(formData.title || formData.description || formData.content) && (
+                {(formData.title ||
+                  formData.description ||
+                  formData.content) && (
                   <div className="mt-8 pt-8 border-t border-christmas-gold">
                     <h3 className="text-xl font-bold text-christmas-dark mb-4 font-christmas">
                       Preview
@@ -153,13 +186,14 @@ export default function ManageStationInfo() {
                           </h4>
                         )}
                         {formData.description && (
-                          <p className="text-gray-600 italic mb-4">{formData.description}</p>
+                          <p className="text-gray-600 italic mb-4">
+                            {formData.description}
+                          </p>
                         )}
                         {formData.content && (
-                          <div 
-                            className="prose prose-lg max-w-none text-gray-700"
-                            dangerouslySetInnerHTML={{ __html: formData.content }}
-                          />
+                          <div className="prose prose-lg max-w-none text-gray-700 whitespace-pre-wrap">
+                            {formData.content}
+                          </div>
                         )}
                       </div>
                     </Card>

@@ -1,21 +1,35 @@
-import { useState, useEffect } from 'react';
-import { useInternetIdentity } from '../hooks/useInternetIdentity';
-import { useGetCallerUserProfile, useSaveCallerUserProfile } from '../hooks/useQueries';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { toast } from 'sonner';
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { useInternetIdentity } from "../hooks/useInternetIdentity";
+import {
+  useGetCallerUserProfile,
+  useSaveCallerUserProfile,
+} from "../hooks/useQueries";
 
 export default function ProfileSetup() {
   const { identity } = useInternetIdentity();
-  const { data: userProfile, isLoading: profileLoading, isFetched } = useGetCallerUserProfile();
+  const {
+    data: userProfile,
+    isLoading: profileLoading,
+    isFetched,
+  } = useGetCallerUserProfile();
   const saveProfile = useSaveCallerUserProfile();
-  const [name, setName] = useState('');
+  const [name, setName] = useState("");
   const [open, setOpen] = useState(false);
 
   const isAuthenticated = !!identity;
-  const showProfileSetup = isAuthenticated && !profileLoading && isFetched && userProfile === null;
+  const showProfileSetup =
+    isAuthenticated && !profileLoading && isFetched && userProfile === null;
 
   useEffect(() => {
     setOpen(showProfileSetup);
@@ -24,17 +38,17 @@ export default function ProfileSetup() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) {
-      toast.error('Please enter your name');
+      toast.error("Please enter your name");
       return;
     }
 
     try {
       await saveProfile.mutateAsync({ name: name.trim() });
-      toast.success('Profile created successfully!');
+      toast.success("Profile created successfully!");
       setOpen(false);
     } catch (error: any) {
-      console.error('Error saving profile:', error);
-      toast.error(error.message || 'Failed to save profile');
+      console.error("Error saving profile:", error);
+      toast.error(error.message || "Failed to save profile");
     }
   };
 
@@ -69,7 +83,7 @@ export default function ProfileSetup() {
             disabled={saveProfile.isPending}
             className="w-full bg-christmas-red hover:bg-christmas-red-dark text-white"
           >
-            {saveProfile.isPending ? 'Saving...' : 'Continue'}
+            {saveProfile.isPending ? "Saving..." : "Continue"}
           </Button>
         </form>
       </DialogContent>

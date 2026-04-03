@@ -1,33 +1,38 @@
-import { useState, useEffect } from 'react';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { ArrowLeft, Save, X, Radio } from 'lucide-react';
-import { Link } from '@tanstack/react-router';
-import ProtectedRoute from '../../components/ProtectedRoute';
-import { useGetOnAirOverride, useSetOnAirOverride, useClearOnAirOverride } from '../../hooks/useQueries';
-import { toast } from 'sonner';
-import type { OnAirOverride } from '../../backend';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Link } from "@tanstack/react-router";
+import { ArrowLeft, Radio, Save, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import type { OnAirOverride } from "../../backend";
+import ProtectedRoute from "../../components/ProtectedRoute";
+import {
+  useClearOnAirOverride,
+  useGetOnAirOverride,
+  useSetOnAirOverride,
+} from "../../hooks/useQueries";
 
 export default function ManageOnAir() {
-  const { data: currentOverride, isLoading } = useGetOnAirOverride();
+  const { data: currentOverride } = useGetOnAirOverride();
   const setOnAirOverride = useSetOnAirOverride();
   const clearOnAirOverride = useClearOnAirOverride();
 
-  const [showName, setShowName] = useState('');
-  const [description, setDescription] = useState('');
-  const [durationHours, setDurationHours] = useState('1');
+  const [showName, setShowName] = useState("");
+  const [description, setDescription] = useState("");
+  const [durationHours, setDurationHours] = useState("1");
 
   useEffect(() => {
     if (currentOverride) {
       setShowName(currentOverride.overrideProgram);
       setDescription(currentOverride.description);
-      
+
       // Calculate duration from start and end times
-      const durationNs = Number(currentOverride.endTime) - Number(currentOverride.startTime);
+      const durationNs =
+        Number(currentOverride.endTime) - Number(currentOverride.startTime);
       const durationHours = durationNs / (1000000 * 1000 * 60 * 60);
       setDurationHours(durationHours.toString());
     }
@@ -35,23 +40,23 @@ export default function ManageOnAir() {
 
   const handleSave = async () => {
     if (!showName.trim()) {
-      toast.error('Validation Error', {
-        description: 'Show name is required',
+      toast.error("Validation Error", {
+        description: "Show name is required",
       });
       return;
     }
 
     if (!description.trim()) {
-      toast.error('Validation Error', {
-        description: 'Description is required',
+      toast.error("Validation Error", {
+        description: "Description is required",
       });
       return;
     }
 
-    const hours = parseFloat(durationHours);
-    if (isNaN(hours) || hours <= 0) {
-      toast.error('Validation Error', {
-        description: 'Duration must be a positive number',
+    const hours = Number.parseFloat(durationHours);
+    if (Number.isNaN(hours) || hours <= 0) {
+      toast.error("Validation Error", {
+        description: "Duration must be a positive number",
       });
       return;
     }
@@ -70,12 +75,12 @@ export default function ManageOnAir() {
 
       await setOnAirOverride.mutateAsync(override);
 
-      toast.success('On Air Override Saved!', {
+      toast.success("On Air Override Saved!", {
         description: `"${showName}" will display for ${hours} hour(s)`,
       });
     } catch (error: any) {
-      toast.error('Save Failed', {
-        description: error.message || 'Failed to save On Air override',
+      toast.error("Save Failed", {
+        description: error.message || "Failed to save On Air override",
       });
     }
   };
@@ -83,21 +88,22 @@ export default function ManageOnAir() {
   const handleClear = async () => {
     try {
       await clearOnAirOverride.mutateAsync();
-      setShowName('');
-      setDescription('');
-      setDurationHours('1');
+      setShowName("");
+      setDescription("");
+      setDurationHours("1");
 
-      toast.success('Override Cleared', {
-        description: 'On Air display reverted to automatic schedule',
+      toast.success("Override Cleared", {
+        description: "On Air display reverted to automatic schedule",
       });
     } catch (error: any) {
-      toast.error('Clear Failed', {
-        description: error.message || 'Failed to clear On Air override',
+      toast.error("Clear Failed", {
+        description: error.message || "Failed to clear On Air override",
       });
     }
   };
 
-  const isActive = currentOverride && Number(currentOverride.endTime) > Date.now() * 1000000;
+  const isActive =
+    currentOverride && Number(currentOverride.endTime) > Date.now() * 1000000;
 
   return (
     <ProtectedRoute>
@@ -132,10 +138,14 @@ export default function ManageOnAir() {
                     </Badge>
                   </div>
                   <p className="text-sm text-gray-700">
-                    <strong>"{currentOverride.overrideProgram}"</strong> is currently displaying on the homepage
+                    <strong>"{currentOverride.overrideProgram}"</strong> is
+                    currently displaying on the homepage
                   </p>
                   <p className="text-xs text-gray-600 mt-1">
-                    Expires: {new Date(Number(currentOverride.endTime) / 1000000).toLocaleString()}
+                    Expires:{" "}
+                    {new Date(
+                      Number(currentOverride.endTime) / 1000000,
+                    ).toLocaleString()}
                   </p>
                 </div>
               </div>
@@ -153,7 +163,10 @@ export default function ManageOnAir() {
 
               <div className="space-y-6">
                 <div>
-                  <Label htmlFor="showName" className="text-christmas-dark font-semibold">
+                  <Label
+                    htmlFor="showName"
+                    className="text-christmas-dark font-semibold"
+                  >
                     Show Name *
                   </Label>
                   <Input
@@ -166,7 +179,10 @@ export default function ManageOnAir() {
                 </div>
 
                 <div>
-                  <Label htmlFor="description" className="text-christmas-dark font-semibold">
+                  <Label
+                    htmlFor="description"
+                    className="text-christmas-dark font-semibold"
+                  >
                     Description *
                   </Label>
                   <Textarea
@@ -180,7 +196,10 @@ export default function ManageOnAir() {
                 </div>
 
                 <div>
-                  <Label htmlFor="duration" className="text-christmas-dark font-semibold">
+                  <Label
+                    htmlFor="duration"
+                    className="text-christmas-dark font-semibold"
+                  >
                     Duration (hours) *
                   </Label>
                   <Input
@@ -245,10 +264,10 @@ export default function ManageOnAir() {
                 <Card className="bg-white/95 backdrop-blur-sm border-christmas-red border-2 shadow-2xl relative overflow-hidden">
                   {/* Animated gradient background */}
                   <div className="absolute inset-0 bg-gradient-to-r from-christmas-red/10 via-christmas-gold/10 to-christmas-red/10 animate-on-air-glow" />
-                  
+
                   {/* Glowing border effect */}
                   <div className="absolute inset-0 border-2 border-christmas-gold rounded-lg animate-on-air-border-pulse" />
-                  
+
                   <div className="p-6 relative">
                     <div className="flex items-start gap-4">
                       {/* Animated radio icon */}
@@ -256,7 +275,7 @@ export default function ManageOnAir() {
                         <div className="absolute inset-0 rounded-full bg-gradient-to-br from-christmas-red to-christmas-gold animate-on-air-icon-glow opacity-50 blur-md" />
                         <Radio className="h-8 w-8 text-white relative z-10 drop-shadow-lg" />
                       </div>
-                      
+
                       <div className="flex-1">
                         {/* "On Air" badge */}
                         <div className="flex items-center gap-2 mb-2">
@@ -265,12 +284,12 @@ export default function ManageOnAir() {
                             <span className="relative z-10">🔴 On Air Now</span>
                           </Badge>
                         </div>
-                        
+
                         {/* Program name */}
                         <h3 className="text-2xl font-bold text-christmas-dark font-christmas mb-2 animate-on-air-text-glow">
                           {showName}
                         </h3>
-                        
+
                         {/* Program description */}
                         <p className="text-gray-700 leading-relaxed">
                           {description}
@@ -287,11 +306,17 @@ export default function ManageOnAir() {
               )}
 
               <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <h4 className="font-semibold text-blue-900 mb-2">ℹ️ How it works</h4>
+                <h4 className="font-semibold text-blue-900 mb-2">
+                  ℹ️ How it works
+                </h4>
                 <ul className="text-sm text-blue-800 space-y-1">
                   <li>• Override will display immediately after saving</li>
-                  <li>• Automatically reverts to schedule after duration expires</li>
-                  <li>• Clear override anytime to return to automatic display</li>
+                  <li>
+                    • Automatically reverts to schedule after duration expires
+                  </li>
+                  <li>
+                    • Clear override anytime to return to automatic display
+                  </li>
                   <li>• Changes are visible on the homepage instantly</li>
                 </ul>
               </div>

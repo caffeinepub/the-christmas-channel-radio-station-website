@@ -30,6 +30,7 @@ export interface WeatherData {
     days: Array<WeatherDay>;
 }
 export interface ThemeSettings {
+    showNewsFeed: boolean;
     primaryColor: TailwindColor;
     showCountdown: boolean;
     accentColor: TailwindColor;
@@ -47,6 +48,7 @@ export interface StationInformation {
     description: string;
 }
 export interface Program {
+    bio: string;
     startTime: string;
     endTime: string;
     name: string;
@@ -68,11 +70,25 @@ export interface OnAirOverride {
     endTime: Time;
     description: string;
 }
+export interface ProgramDaySlot {
+    day: string;
+    program: Program;
+}
 export interface UserProfile {
     name: string;
 }
+export interface BlogPost {
+    id: string;
+    title: string;
+    content: string;
+    author: string;
+    createdAt: Time;
+    published: boolean;
+}
 export enum BackgroundImage {
+    christmasLights = "christmasLights",
     festiveTree = "festiveTree",
+    holidayDecorations = "holidayDecorations",
     twinklingLights = "twinklingLights",
     snowyVillage = "snowyVillage"
 }
@@ -82,6 +98,7 @@ export enum TailwindColor {
     gold = "gold",
     purple = "purple",
     green = "green",
+    silver = "silver",
     brown = "brown",
     white = "white"
 }
@@ -91,37 +108,45 @@ export enum UserRole {
     guest = "guest"
 }
 export interface backendInterface {
-    addCustomProgram(name: string, description: string, startTime: string, endTime: string): Promise<void>;
+    addCustomProgram(name: string, description: string, bio: string, startTime: string, endTime: string, days: Array<string>): Promise<void>;
     addDJProfile(name: string, bio: string, photo: ExternalBlob): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     clearNowPlaying(): Promise<void>;
     clearOnAirOverride(): Promise<void>;
     clearSongRequests(): Promise<void>;
+    createBlogPost(title: string, content: string, author: string): Promise<string>;
+    deleteBlogPost(id: string): Promise<void>;
     deleteDJProfile(name: string): Promise<void>;
-    deleteProgram(name: string): Promise<void>;
+    deleteProgram(name: string, day: string): Promise<void>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
     getDJProfiles(): Promise<Array<DJProfile>>;
     getLastUpdateResult(): Promise<LastUpdateResult | null>;
     getNowPlaying(): Promise<NowPlaying | null>;
     getOnAirOverride(): Promise<OnAirOverride | null>;
-    getProgramSchedule(): Promise<Array<Program>>;
+    getProgramSchedule(): Promise<Array<[string, Array<ProgramDaySlot>]>>;
+    getProgramsForDay(day: string): Promise<Array<Program>>;
     getSongRequests(): Promise<Array<SongRequest>>;
     getStationInformation(): Promise<StationInformation | null>;
     getThemeSettings(): Promise<ThemeSettings>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     getWeatherData(): Promise<WeatherData | null>;
+    getAllBlogPosts(): Promise<Array<BlogPost>>;
+    getBlogPosts(): Promise<Array<BlogPost>>;
     isCallerAdmin(): Promise<boolean>;
     previewChanges(): Promise<void>;
+    publishBlogPost(id: string): Promise<void>;
     publishChanges(): Promise<void>;
     runManualUpdate(files: Array<string>): Promise<LastUpdateResult>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
     setOnAirOverride(override: OnAirOverride): Promise<void>;
     submitSongRequest(songRequest: SongRequest): Promise<void>;
+    unpublishBlogPost(id: string): Promise<void>;
+    updateBlogPost(id: string, title: string, content: string, author: string): Promise<void>;
     updateDJProfile(name: string, bio: string, photo: ExternalBlob): Promise<void>;
     updateNowPlaying(title: string, artist: string): Promise<void>;
-    updateProgram(name: string, description: string, startTime: string, endTime: string): Promise<void>;
+    updateProgram(name: string, description: string, bio: string, startTime: string, endTime: string, oldDay: string, newDay: string): Promise<void>;
     updateStationInformation(stationInfo: StationInformation): Promise<void>;
-    updateThemeSettings(showCountdown: boolean, snowEnabled: boolean, backgroundImage: BackgroundImage, primaryColor: TailwindColor, accentColor: TailwindColor): Promise<void>;
+    updateThemeSettings(showCountdown: boolean, showNewsFeed: boolean, snowEnabled: boolean, backgroundImage: BackgroundImage, primaryColor: TailwindColor, accentColor: TailwindColor): Promise<void>;
     updateWeatherData(newWeatherData: WeatherData): Promise<void>;
 }

@@ -1,17 +1,17 @@
-import RadioPlayer from '../components/RadioPlayer';
-import NowPlaying from '../components/NowPlaying';
-import LastPlayed from '../components/LastPlayed';
-import WaysToListen from '../components/WaysToListen';
-import OnAirDisplay from '../components/OnAirDisplay';
-import UpcomingShows from '../components/UpcomingShows';
-import ChristmasCountdown from '../components/ChristmasCountdown';
-import PublicWeatherForecast from '../components/PublicWeatherForecast';
-import ScrollingBanner from '../components/ScrollingBanner';
-import { Calendar, Users, Radio } from 'lucide-react';
-import { Link } from '@tanstack/react-router';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { useGetThemeSettings } from '../hooks/useQueries';
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Link } from "@tanstack/react-router";
+import { Calendar, Radio, Users } from "lucide-react";
+import ChristmasCountdown from "../components/ChristmasCountdown";
+import LastPlayed from "../components/LastPlayed";
+import NowPlaying from "../components/NowPlaying";
+import OnAirDisplay from "../components/OnAirDisplay";
+import PublicWeatherForecast from "../components/PublicWeatherForecast";
+import RadioPlayer from "../components/RadioPlayer";
+import ScrollingBanner from "../components/ScrollingBanner";
+import UpcomingShows from "../components/UpcomingShows";
+import WaysToListen from "../components/WaysToListen";
+import { useGetThemeSettings } from "../hooks/useQueries";
 
 export default function HomePage() {
   const { data: themeSettings } = useGetThemeSettings();
@@ -37,7 +37,7 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-        
+
         {/* Christmas Countdown Timer - conditionally rendered */}
         {themeSettings?.showCountdown !== false && <ChristmasCountdown />}
       </section>
@@ -98,7 +98,10 @@ export default function HomePage() {
             <p className="text-gray-600 mb-4">
               Check out our daily festive programming lineup
             </p>
-            <Button asChild className="bg-christmas-red hover:bg-christmas-red-dark">
+            <Button
+              asChild
+              className="bg-christmas-red hover:bg-christmas-red-dark"
+            >
               <Link to="/schedule">View Schedule</Link>
             </Button>
           </div>
@@ -115,7 +118,10 @@ export default function HomePage() {
             <p className="text-gray-600 mb-4">
               Get to know the voices behind the music
             </p>
-            <Button asChild className="bg-christmas-green hover:bg-christmas-green-dark">
+            <Button
+              asChild
+              className="bg-christmas-green hover:bg-christmas-green-dark"
+            >
               <Link to="/djs">Meet the Team</Link>
             </Button>
           </div>
@@ -132,7 +138,10 @@ export default function HomePage() {
             <p className="text-gray-600 mb-4">
               Send us your favorite holiday tune request
             </p>
-            <Button asChild className="bg-christmas-gold hover:bg-christmas-gold-light text-christmas-red">
+            <Button
+              asChild
+              className="bg-christmas-gold hover:bg-christmas-gold-light text-christmas-red"
+            >
               <Link to="/requests">Make a Request</Link>
             </Button>
           </div>

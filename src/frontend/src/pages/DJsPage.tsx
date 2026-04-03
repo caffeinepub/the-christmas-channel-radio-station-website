@@ -1,7 +1,7 @@
-import { Users } from 'lucide-react';
-import { Card } from '@/components/ui/card';
-import { useGetDJProfiles } from '../hooks/useQueries';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Users } from "lucide-react";
+import { useGetDJProfiles } from "../hooks/useQueries";
 
 export default function DJsPage() {
   const { data: djs, isLoading } = useGetDJProfiles();
@@ -27,7 +27,10 @@ export default function DJsPage() {
           {isLoading ? (
             <>
               {[1, 2, 3].map((i) => (
-                <Card key={i} className="bg-white/95 backdrop-blur-sm border-christmas-gold border-2">
+                <Card
+                  key={i}
+                  className="bg-white/95 backdrop-blur-sm border-christmas-gold border-2"
+                >
                   <div className="p-6">
                     <Skeleton className="w-full aspect-square rounded-lg mb-4" />
                     <Skeleton className="h-6 w-32 mb-2" />
@@ -38,9 +41,9 @@ export default function DJsPage() {
               ))}
             </>
           ) : djs && djs.length > 0 ? (
-            djs.map((dj, index) => (
+            djs.map((dj) => (
               <Card
-                key={index}
+                key={dj.name}
                 className="bg-white/95 backdrop-blur-sm border-christmas-gold border-2 hover:shadow-xl transition-all hover:-translate-y-1"
               >
                 <div className="p-6">
@@ -67,8 +70,12 @@ export default function DJsPage() {
               <Card className="bg-white/95 backdrop-blur-sm border-christmas-gold border-2">
                 <div className="p-12 text-center">
                   <Users className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-xl font-bold text-gray-600 mb-2">No DJs Yet</h3>
-                  <p className="text-gray-500">Our team is getting ready for the holiday season!</p>
+                  <h3 className="text-xl font-bold text-gray-600 mb-2">
+                    No DJs Yet
+                  </h3>
+                  <p className="text-gray-500">
+                    Our team is getting ready for the holiday season!
+                  </p>
                 </div>
               </Card>
             </div>
